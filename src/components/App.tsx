@@ -1,10 +1,12 @@
+import { ApolloProvider } from '@apollo/react-hooks';
 import React, { FC } from 'react';
-import { Text, View } from 'react-native';
+import client from '../graphql/client';
+import Books from './Books';
 
 const App: FC = () => (
-  <View>
-    <Text>Hello App</Text>
-  </View>
+  <ApolloProvider client={client}>
+    <Books />
+  </ApolloProvider>
 );
 
 export default App;
