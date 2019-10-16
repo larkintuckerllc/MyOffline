@@ -29,7 +29,7 @@ export const BOOKS = gql`
 `;
 
 export const BOOKS_UPDATE = gql`
-  query booksUpdate($lastModified: Int!) {
+  query booksUpdate($lastModified: String!) {
     booksUpdate(lastModified: $lastModified) {
       author
       id
