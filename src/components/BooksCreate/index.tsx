@@ -1,9 +1,8 @@
 import { useMutation } from '@apollo/react-hooks';
 import { Formik } from 'formik';
 import React, { FC } from 'react';
-import { Text, TextInput, TouchableOpacity, View } from 'react-native';
-import styles from './styles';
 import { BOOKS_CREATE, BooksCreateData, BooksCreateVariables } from '../../graphql/books';
+import BooksCreateView from './BooksCreateView';
 
 interface ValidationError {
   author?: string;
@@ -15,6 +14,7 @@ const BooksCreate: FC = () => {
 
   return (
     <Formik
+      component={BooksCreateView}
       initialValues={{ author: '', title: '' }}
       onSubmit={async (
         { author, title },
@@ -34,43 +34,6 @@ const BooksCreate: FC = () => {
           setStatus('500');
         }
       }}
-      render={({
-        handleChange,
-        handleSubmit,
-        isSubmitting,
-        isValid,
-        status,
-        values: { author, title },
-      }): JSX.Element => (
-        <View>
-          <TextInput
-            editable={!isSubmitting}
-            onChangeText={handleChange('author')}
-            selectTextOnFocus={!isSubmitting}
-            style={styles.rootInput}
-            value={author}
-          />
-          <TextInput
-            editable={!isSubmitting}
-            onChangeText={handleChange('title')}
-            selectTextOnFocus={!isSubmitting}
-            style={styles.rootInput}
-            value={title}
-          />
-          {status !== undefined && (
-            <View style={styles.rootError}>
-              <Text>Error Creating</Text>
-            </View>
-          )}
-          <TouchableOpacity
-            disabled={!isValid || isSubmitting}
-            onPress={handleSubmit}
-            style={[styles.rootSubmit, (!isValid || isSubmitting) && styles.rootSubmitDisabled]}
-          >
-            <Text>Create</Text>
-          </TouchableOpacity>
-        </View>
-      )}
       validate={({ author, title }): object => {
         const errors: ValidationError = {};
         if (author.trim() === '') {
