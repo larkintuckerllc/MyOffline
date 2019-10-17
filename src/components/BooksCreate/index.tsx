@@ -37,9 +37,9 @@ const BooksCreate: FC = () => {
           });
           resetForm();
         } catch (err) {
-          setSubmitting(false);
           setStatus('500');
         }
+        setSubmitting(false);
       }}
       validate={({ author, title }): object => {
         const errors: ValidationError = {};

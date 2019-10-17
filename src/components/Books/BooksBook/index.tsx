@@ -1,5 +1,5 @@
 import { ExecutionResult, MutationFunctionOptions } from '@apollo/react-common';
-import React, { FC, useCallback } from 'react';
+import React, { FC, useCallback, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import styles from './styles';
 import { BooksDeleteData, BooksDeleteVariables } from '../../../graphql/books';
@@ -13,20 +13,23 @@ interface Props {
   title: string;
 }
 
-// TODO: ERROR
-// TODO: UPDATE
 const BooksBook: FC<Props> = ({ author, booksDelete, id, title }) => {
+  const [submitting, setSubmitting] = useState(false);
+  const [errored, setErrored] = useState(false);
   const handlePress = useCallback(async (): Promise<void> => {
     try {
+      setErrored(false);
+      setSubmitting(true);
       await booksDelete({
         variables: {
           id,
         },
       });
     } catch (err) {
-      //
+      setErrored(true);
     }
-  }, []);
+    setSubmitting(false);
+  }, [booksDelete]);
 
   return (
     <View style={styles.root}>
@@ -42,8 +45,9 @@ const BooksBook: FC<Props> = ({ author, booksDelete, id, title }) => {
         title:
         {title}
       </Text>
-      <TouchableOpacity onPress={handlePress}>
-        <Text>DELETE</Text>
+      {errored && <Text style={styles.rootError}>Delete Error</Text>}
+      <TouchableOpacity disabled={submitting} onPress={handlePress}>
+        <Text style={submitting && styles.rootDeleteText}>DELETE</Text>
       </TouchableOpacity>
     </View>
   );
