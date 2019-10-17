@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import { createStore } from 'redux';
 import { persistReducer, persistStore } from 'redux-persist';
-import reducer from './ducks/';
+import reducer from './ducks';
 
 interface MyWindow extends Window {
   // eslint-disable-next-line
