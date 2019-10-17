@@ -5,10 +5,10 @@ import { Book, BooksData, BOOKS } from '../../graphql/books';
 import styles from './styles';
 
 const bookSort = (a: Book, b: Book): number => {
-  if (a.id < b.id) {
+  if (a.author < b.author) {
     return -1;
   }
-  if (a.id > b.id) {
+  if (a.author > b.author) {
     return 1;
   }
   return 0;

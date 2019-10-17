@@ -1,7 +1,12 @@
 import { useMutation } from '@apollo/react-hooks';
 import { Formik } from 'formik';
 import React, { FC } from 'react';
-import { BOOKS_CREATE, BooksCreateData, BooksCreateVariables } from '../../graphql/books';
+import {
+  BOOKS_CREATE,
+  BooksCreateData,
+  BooksCreateVariables,
+  handleBooksCreateUpdate,
+} from '../../graphql/books';
 import BooksCreateView from './BooksCreateView';
 
 interface ValidationError {
@@ -9,9 +14,10 @@ interface ValidationError {
   title?: string;
 }
 
-// TODO: UPDATE CACHE
 const BooksCreate: FC = () => {
-  const [booksCreate] = useMutation<BooksCreateData, BooksCreateVariables>(BOOKS_CREATE);
+  const [booksCreate] = useMutation<BooksCreateData, BooksCreateVariables>(BOOKS_CREATE, {
+    update: handleBooksCreateUpdate,
+  });
 
   return (
     <Formik

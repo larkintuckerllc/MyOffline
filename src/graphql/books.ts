@@ -1,3 +1,4 @@
+import { MutationUpdaterFn } from 'apollo-client';
 import gql from 'graphql-tag';
 
 export interface Book {
@@ -54,8 +55,24 @@ export const BOOKS_CREATE = gql`
     booksCreate(input: { author: $author, title: $title }) {
       author
       id
-      isDeleted
       title
     }
   }
 `;
+
+export const handleBooksCreateUpdate: MutationUpdaterFn<BooksCreateData> = (cache, { data }) => {
+  if (data === undefined || data === null) {
+    return;
+  }
+  const { booksCreate } = data;
+  const cacheData = cache.readQuery<BooksData>({ query: BOOKS });
+  if (cacheData === null) {
+    return;
+  }
+  const { books } = cacheData;
+  const updateBooks = [...books, booksCreate];
+  cache.writeQuery({
+    data: { books: updateBooks },
+    query: BOOKS,
+  });
+};
