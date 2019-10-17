@@ -6,22 +6,22 @@ import {
   BooksCreateData,
   BooksCreateVariables,
   handleBooksCreateUpdate,
-} from '../../graphql/books';
-import BooksCreateView from './BooksCreateView';
+} from '../../../graphql/books';
+import AppBooksCreateView from './AppBooksCreateView';
 
 interface ValidationError {
   author?: string;
   title?: string;
 }
 
-const BooksCreate: FC = () => {
+const AppBooksCreate: FC = () => {
   const [booksCreate] = useMutation<BooksCreateData, BooksCreateVariables>(BOOKS_CREATE, {
     update: handleBooksCreateUpdate,
   });
 
   return (
     <Formik
-      component={BooksCreateView}
+      component={AppBooksCreateView}
       initialValues={{ author: '', title: '' }}
       onSubmit={async (
         { author, title },
@@ -55,4 +55,4 @@ const BooksCreate: FC = () => {
   );
 };
 
-export default BooksCreate;
+export default AppBooksCreate;

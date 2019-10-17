@@ -2,7 +2,7 @@ import { ExecutionResult, MutationFunctionOptions } from '@apollo/react-common';
 import React, { FC, useCallback, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import styles from './styles';
-import { BooksDeleteData, BooksDeleteVariables } from '../../../graphql/books';
+import { BooksDeleteData, BooksDeleteVariables } from '../../../../graphql/books';
 
 interface Props {
   author: string;
@@ -13,7 +13,7 @@ interface Props {
   title: string;
 }
 
-const BooksBook: FC<Props> = ({ author, booksDelete, id, title }) => {
+const AppBooksBook: FC<Props> = ({ author, booksDelete, id, title }) => {
   const [submitting, setSubmitting] = useState(false);
   const [errored, setErrored] = useState(false);
   const handlePress = useCallback(async (): Promise<void> => {
@@ -27,8 +27,8 @@ const BooksBook: FC<Props> = ({ author, booksDelete, id, title }) => {
       });
     } catch (err) {
       setErrored(true);
+      setSubmitting(false);
     }
-    setSubmitting(false);
   }, [booksDelete]);
 
   return (
@@ -47,10 +47,10 @@ const BooksBook: FC<Props> = ({ author, booksDelete, id, title }) => {
       </Text>
       {errored && <Text style={styles.rootError}>Delete Error</Text>}
       <TouchableOpacity disabled={submitting} onPress={handlePress}>
-        <Text style={submitting && styles.rootDeleteText}>DELETE</Text>
+        <Text style={submitting && styles.rootDeleteText}>Delete</Text>
       </TouchableOpacity>
     </View>
   );
 };
 
-export default BooksBook;
+export default AppBooksBook;

@@ -9,9 +9,9 @@ import {
   BOOKS,
   BOOKS_DELETE,
   handleBooksDeleteUpdate,
-} from '../../graphql/books';
+} from '../../../graphql/books';
 import styles from './styles';
-import BooksBook from './BooksBook';
+import AppBooksBook from './AppBooksBook';
 
 const bookSort = (a: Book, b: Book): number => {
   if (a.author < b.author) {
@@ -23,7 +23,7 @@ const bookSort = (a: Book, b: Book): number => {
   return 0;
 };
 
-const Books: FC = () => {
+const AppBooks: FC = () => {
   const { loading, error, data } = useQuery<BooksData>(BOOKS);
   const [booksDelete] = useMutation<BooksDeleteData, BooksDeleteVariables>(BOOKS_DELETE, {
     update: handleBooksDeleteUpdate,
@@ -31,13 +31,14 @@ const Books: FC = () => {
   if (loading) return <Text>Loading...</Text>;
   if (error || data === undefined) return <Text>Error :(</Text>;
   const sortedBooks = data.books.sort(bookSort); // CANNOT USE USEMEMO HERE
+
   return (
     <ScrollView style={styles.root}>
       {sortedBooks.map(({ author, id, title }) => (
-        <BooksBook author={author} booksDelete={booksDelete} key={id} id={id} title={title} />
+        <AppBooksBook author={author} booksDelete={booksDelete} key={id} id={id} title={title} />
       ))}
     </ScrollView>
   );
 };
 
-export default Books;
+export default AppBooks;
