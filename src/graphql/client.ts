@@ -9,6 +9,8 @@ import { ApolloLink } from 'apollo-link';
 
 const URI = 'http://localhost:5000/graphql';
 
+export const cache = new InMemoryCache();
+
 export default new ApolloClient({
   link: ApolloLink.from([
     onError(({ graphQLErrors, networkError }) => {
@@ -28,5 +30,5 @@ export default new ApolloClient({
       credentials: 'same-origin',
     }),
   ]),
-  cache: new InMemoryCache(),
+  cache,
 });
