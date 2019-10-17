@@ -28,6 +28,14 @@ export interface BooksCreateData {
   booksCreate: Book;
 }
 
+export interface BooksDeleteVariables {
+  id: string;
+}
+
+export interface BooksDeleteData {
+  booksDelete: Book;
+}
+
 export const BOOKS = gql`
   query books {
     books {
@@ -60,6 +68,16 @@ export const BOOKS_CREATE = gql`
   }
 `;
 
+export const BOOKS_DELETE = gql`
+  mutation booksDelete($id: String!) {
+    booksDelete(id: $id) {
+      author
+      id
+      title
+    }
+  }
+`;
+
 export const handleBooksCreateUpdate: MutationUpdaterFn<BooksCreateData> = (cache, { data }) => {
   if (data === undefined || data === null) {
     return;
@@ -71,6 +89,25 @@ export const handleBooksCreateUpdate: MutationUpdaterFn<BooksCreateData> = (cach
   }
   const { books } = cacheData;
   const updateBooks = [...books, booksCreate];
+  cache.writeQuery({
+    data: { books: updateBooks },
+    query: BOOKS,
+  });
+};
+
+export const handleBooksDeleteUpdate: MutationUpdaterFn<BooksDeleteData> = (cache, { data }) => {
+  if (data === undefined || data === null) {
+    return;
+  }
+  const { booksDelete } = data;
+  const cacheData = cache.readQuery<BooksData>({ query: BOOKS });
+  if (cacheData === null) {
+    return;
+  }
+  const { books } = cacheData;
+  const updateBooks = [...books];
+  const booksDeleteIndex = updateBooks.findIndex(book => book.id === booksDelete.id);
+  updateBooks.splice(booksDeleteIndex, 1);
   cache.writeQuery({
     data: { books: updateBooks },
     query: BOOKS,

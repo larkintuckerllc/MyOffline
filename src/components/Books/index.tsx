@@ -1,8 +1,17 @@
-import { useQuery } from '@apollo/react-hooks';
+import { useMutation, useQuery } from '@apollo/react-hooks';
 import React, { FC } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import { Book, BooksData, BOOKS } from '../../graphql/books';
+import { ScrollView, Text } from 'react-native';
+import {
+  Book,
+  BooksData,
+  BooksDeleteData,
+  BooksDeleteVariables,
+  BOOKS,
+  BOOKS_DELETE,
+  handleBooksDeleteUpdate,
+} from '../../graphql/books';
 import styles from './styles';
+import BooksBook from './BooksBook';
 
 const bookSort = (a: Book, b: Book): number => {
   if (a.author < b.author) {
@@ -16,30 +25,19 @@ const bookSort = (a: Book, b: Book): number => {
 
 const Books: FC = () => {
   const { loading, error, data } = useQuery<BooksData>(BOOKS);
+  const [booksDelete] = useMutation<BooksDeleteData, BooksDeleteVariables>(BOOKS_DELETE, {
+    update: handleBooksDeleteUpdate,
+  });
   if (loading) return <Text>Loading...</Text>;
   if (error || data === undefined) return <Text>Error :(</Text>;
   const sortedBooks = data.books.sort(bookSort); // CANNOT USE USEMEMO HERE
   return (
     <ScrollView style={styles.root}>
       {sortedBooks.map(({ author, id, title }) => (
-        <View key={id} style={{ marginTop: 30 }}>
-          <Text>
-            author:
-            {author}
-          </Text>
-          <Text>
-            id:
-            {id}
-          </Text>
-          <Text>
-            title:
-            {title}
-          </Text>
-        </View>
+        <BooksBook author={author} booksDelete={booksDelete} key={id} id={id} title={title} />
       ))}
     </ScrollView>
   );
 };
 
 export default Books;
-``
