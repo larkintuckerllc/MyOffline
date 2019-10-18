@@ -1,12 +1,14 @@
 import { ExecutionResult, MutationFunctionOptions } from '@apollo/react-common';
 import React, { FC, useCallback, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
+import { useSelector } from 'react-redux';
 import styles from './styles';
 import {
   BooksDeleteData,
   booksDeleteOptimistic,
   BooksDeleteVariables,
 } from '../../../../graphql/books';
+import { getOnline } from '../../../../store/ducks/online';
 
 interface Props {
   author: string;
@@ -18,6 +20,7 @@ interface Props {
 }
 
 const AppBooksBook: FC<Props> = ({ author, booksDelete, id, title }) => {
+  const online = useSelector(getOnline);
   const [submitting, setSubmitting] = useState(false);
   const [errored, setErrored] = useState(false);
   const handlePress = useCallback(async (): Promise<void> => {
@@ -32,10 +35,12 @@ const AppBooksBook: FC<Props> = ({ author, booksDelete, id, title }) => {
         variables: book,
       });
     } catch (err) {
-      setErrored(true);
-      setSubmitting(false);
+      if (online) {
+        setErrored(true);
+        setSubmitting(false);
+      }
     }
-  }, [booksDelete, setErrored, setSubmitting]);
+  }, [booksDelete, online, setErrored, setSubmitting]);
 
   return (
     <View style={styles.root}>

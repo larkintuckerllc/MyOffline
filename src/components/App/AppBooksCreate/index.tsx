@@ -46,18 +46,28 @@ const AppBooksCreate: FC = () => {
         id,
         title,
       };
+      if (!online) {
+        resetForm();
+        setSubmitting(false);
+      }
       try {
         await booksCreate({
           optimisticResponse: booksCreateOptimistic(book),
           variables: book,
         });
-        resetForm();
+        if (online) {
+          resetForm();
+        }
       } catch (err) {
-        setStatus('500');
+        if (online) {
+          setStatus('500');
+        }
       }
-      setSubmitting(false);
+      if (online) {
+        setSubmitting(false);
+      }
     },
-    [booksCreate]
+    [booksCreate, online]
   );
 
   return (
