@@ -57,7 +57,7 @@ const AppBooksCreate: FC = () => {
       }
       setSubmitting(false);
     },
-    []
+    [booksCreate]
   );
 
   return (

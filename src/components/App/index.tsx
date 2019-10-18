@@ -37,7 +37,7 @@ const AppUsingRedux: FC = () => {
       setCachePersisted(true);
     };
     execute();
-  }, []);
+  }, [setCachePersisted]);
   // APOLLO CLIENT QUEUE
   useEffect(() => {
     if (online) {

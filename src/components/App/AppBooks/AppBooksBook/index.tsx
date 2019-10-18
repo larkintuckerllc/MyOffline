@@ -35,7 +35,7 @@ const AppBooksBook: FC<Props> = ({ author, booksDelete, id, title }) => {
       setErrored(true);
       setSubmitting(false);
     }
-  }, [booksDelete]);
+  }, [booksDelete, setErrored, setSubmitting]);
 
   return (
     <View style={styles.root}>

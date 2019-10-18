@@ -11,7 +11,7 @@ const AppOnline: FC = () => {
   const online = useSelector(getOnline);
   const handlePress = useCallback(() => {
     dispatch(setOnline(!online));
-  }, [online]);
+  }, [dispatch, online]);
 
   return (
     <View style={styles.root}>
