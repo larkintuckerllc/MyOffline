@@ -2,7 +2,11 @@ import { ExecutionResult, MutationFunctionOptions } from '@apollo/react-common';
 import React, { FC, useCallback, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import styles from './styles';
-import { BooksDeleteData, BooksDeleteVariables } from '../../../../graphql/books';
+import {
+  BooksDeleteData,
+  booksDeleteOptimistic,
+  BooksDeleteVariables,
+} from '../../../../graphql/books';
 
 interface Props {
   author: string;
@@ -17,13 +21,15 @@ const AppBooksBook: FC<Props> = ({ author, booksDelete, id, title }) => {
   const [submitting, setSubmitting] = useState(false);
   const [errored, setErrored] = useState(false);
   const handlePress = useCallback(async (): Promise<void> => {
+    setErrored(false);
+    setSubmitting(true);
+    const book = {
+      id,
+    };
     try {
-      setErrored(false);
-      setSubmitting(true);
       await booksDelete({
-        variables: {
-          id,
-        },
+        optimisticResponse: booksDeleteOptimistic(book),
+        variables: book,
       });
     } catch (err) {
       setErrored(true);

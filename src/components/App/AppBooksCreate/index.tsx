@@ -5,6 +5,7 @@ import uuidv4 from 'uuid/v4';
 import {
   BOOKS_CREATE,
   BooksCreateData,
+  booksCreateOptimistic,
   BooksCreateVariables,
   handleBooksCreateUpdate,
 } from '../../../graphql/books';
@@ -30,13 +31,15 @@ const AppBooksCreate: FC = () => {
       ): Promise<void> => {
         setStatus(undefined);
         const id = uuidv4();
+        const book = {
+          author,
+          id,
+          title,
+        };
         try {
           await booksCreate({
-            variables: {
-              author,
-              id,
-              title,
-            },
+            optimisticResponse: booksCreateOptimistic(book),
+            variables: book,
           });
           resetForm();
         } catch (err) {

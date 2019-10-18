@@ -24,7 +24,6 @@ const AppUsingReduxUsingApollo: FC = () => {
 };
 
 // TODO: QUEUE
-// TODO: OPTIMISTIC
 const AppUsingRedux: FC = () => {
   const [cachePersisted, setCachePersisted] = useState(false);
   useEffect(() => {

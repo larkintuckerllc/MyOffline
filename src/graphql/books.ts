@@ -7,6 +7,18 @@ export interface Book {
   title: string;
 }
 
+interface BookId {
+  id: string;
+}
+
+interface BookGraphQL extends Book {
+  __typename: string;
+}
+
+interface BookIdGraphQL extends BookId {
+  __typename: string;
+}
+
 export interface BookUpdate extends Book {
   isDeleted: boolean;
 }
@@ -29,12 +41,20 @@ export interface BooksCreateData {
   booksCreate: Book;
 }
 
+interface BooksCreateDataGraphQL {
+  booksCreate: BookGraphQL;
+}
+
 export interface BooksDeleteVariables {
   id: string;
 }
 
 export interface BooksDeleteData {
-  booksDelete: Book;
+  booksDelete: BookId;
+}
+
+interface BooksDeleteDataGraphQL {
+  booksDelete: BookIdGraphQL;
 }
 
 export const BOOKS = gql`
@@ -69,23 +89,27 @@ export const BOOKS_CREATE = gql`
   }
 `;
 
-export const SHIT = (): BooksCreateData => ({
-  booksCreate: {
-    author: '',
-    id: '',
-    title: '',
-  },
-});
-
 export const BOOKS_DELETE = gql`
   mutation booksDelete($id: String!) {
     booksDelete(id: $id) {
-      author
       id
-      title
     }
   }
 `;
+
+export const booksCreateOptimistic = (book: BooksCreateVariables): BooksCreateDataGraphQL => {
+  const bookGraphQL = { ...book, __typename: 'Book' };
+  return {
+    booksCreate: bookGraphQL,
+  };
+};
+
+export const booksDeleteOptimistic = (book: BooksDeleteVariables): BooksDeleteDataGraphQL => {
+  const bookGraphQL = { ...book, __typename: 'Book' };
+  return {
+    booksDelete: bookGraphQL,
+  };
+};
 
 export const handleBooksCreateUpdate: MutationUpdaterFn<BooksCreateData> = (cache, { data }) => {
   if (data === undefined || data === null) {
