@@ -29,23 +29,12 @@ const AppBooksCreate: FC = () => {
         { resetForm, setStatus, setSubmitting }
       ): Promise<void> => {
         setStatus(undefined);
+        const id = uuidv4();
         try {
-          /*
-          optimisticResponse: {
-          createTodo: {
-            __typename: 'CreateTodoPayload',
-            todo: {
-              __typename: 'Todo',
-              id,
-              nodeId: '',
-              title: `${title} (PENDING)`,
-            },
-          },
-        },
-          */
           await booksCreate({
             variables: {
               author,
+              id,
               title,
             },
           });
