@@ -33,7 +33,7 @@ const AppBooks: FC = () => {
     update: handleBooksDeleteUpdate,
   });
   if (loading) return <Text>Loading...</Text>;
-  if (error || data === undefined) return <Text>Error :(</Text>;
+  if (error || data === undefined) return <Text>Error :(</Text>; // UNEXPECTED AS CACHED
   const sortedBooks = data.books.sort(bookSort); // CANNOT USE USEMEMO HERE
 
   return (
