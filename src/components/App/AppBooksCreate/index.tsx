@@ -1,6 +1,7 @@
 import { useMutation } from '@apollo/react-hooks';
 import { Formik } from 'formik';
 import React, { FC } from 'react';
+import uuidv4 from 'uuid/v4';
 import {
   BOOKS_CREATE,
   BooksCreateData,
@@ -29,6 +30,19 @@ const AppBooksCreate: FC = () => {
       ): Promise<void> => {
         setStatus(undefined);
         try {
+          /*
+          optimisticResponse: {
+          createTodo: {
+            __typename: 'CreateTodoPayload',
+            todo: {
+              __typename: 'Todo',
+              id,
+              nodeId: '',
+              title: `${title} (PENDING)`,
+            },
+          },
+        },
+          */
           await booksCreate({
             variables: {
               author,

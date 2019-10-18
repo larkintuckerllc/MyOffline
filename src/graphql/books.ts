@@ -21,6 +21,7 @@ export interface BooksUpdateData {
 
 export interface BooksCreateVariables {
   author: string;
+  id: string;
   title: string;
 }
 
@@ -59,14 +60,22 @@ export const BOOKS_UPDATE = gql`
 `;
 
 export const BOOKS_CREATE = gql`
-  mutation booksCreate($author: String!, $title: String!) {
-    booksCreate(input: { author: $author, title: $title }) {
+  mutation booksCreate($id: String!, $author: String!, $title: String!) {
+    booksCreate(input: { id: $id, author: $author, title: $title }) {
       author
       id
       title
     }
   }
 `;
+
+export const SHIT = (): BooksCreateData => ({
+  booksCreate: {
+    author: '',
+    id: '',
+    title: '',
+  },
+});
 
 export const BOOKS_DELETE = gql`
   mutation booksDelete($id: String!) {
