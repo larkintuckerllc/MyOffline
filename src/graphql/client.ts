@@ -6,6 +6,8 @@ import QueueLink from 'apollo-link-queue';
 import { RetryLink } from 'apollo-link-retry';
 import SerializingLink from 'apollo-link-serialize';
 import { ApolloLink } from 'apollo-link';
+import trackerLink from './trackerLink';
+import store from '../store';
 
 const URI = 'http://localhost:5000/graphql';
 
@@ -23,6 +25,7 @@ export default new ApolloClient({
       // eslint-disable-next-line
       if (networkError) console.log(`[Network error]: ${networkError}`);
     }),
+    trackerLink(store.dispatch),
     queueLink,
     new SerializingLink(),
     new RetryLink(),
