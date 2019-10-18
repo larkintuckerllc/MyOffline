@@ -16,18 +16,13 @@ export const queueLink = new QueueLink();
 
 export default new ApolloClient({
   link: ApolloLink.from([
-    onError(({ graphQLErrors, operation, networkError }) => {
-      // TODO: HANDLE OFFLINE OPERATIONS
-      // TODO: DO NOT TRACK WHEN ONLINE
+    onError(({ operation }) => {
       const context = operation.getContext();
-      console.log(context);
-      if (graphQLErrors)
-        graphQLErrors.forEach(({ message, locations, path }) =>
-          // eslint-disable-next-line
-          console.log(`[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`)
-        );
-      // eslint-disable-next-line
-      if (networkError) console.log(`[Network error]: ${networkError}`);
+      const { tracked } = context;
+      if (tracked === true) {
+        // TODO: DISPATCH EVENTS
+        console.log('TRACKED');
+      }
     }),
     trackerLink(store.dispatch),
     queueLink,

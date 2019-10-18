@@ -35,10 +35,7 @@ const AppBooksBook: FC<Props> = ({ author, booksDelete, id, title }) => {
         variables: book,
       });
     } catch (err) {
-      if (online) {
-        setErrored(true);
-        setSubmitting(false);
-      }
+      // DO NOTHING
     }
   }, [booksDelete, online, setErrored, setSubmitting]);
 
