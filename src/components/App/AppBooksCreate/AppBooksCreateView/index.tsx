@@ -3,7 +3,7 @@ import React, { FC } from 'react';
 import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 import styles from './styles';
 
-interface Values {
+export interface Values {
   author: string;
   title: string;
 }
