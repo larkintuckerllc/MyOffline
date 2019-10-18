@@ -1,5 +1,5 @@
 import { FormikProps } from 'formik';
-import React, { FC } from 'react';
+import React, { FC, useCallback } from 'react';
 import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 import styles from './styles';
 
@@ -7,7 +7,6 @@ export interface Values {
   author: string;
   title: string;
 }
-// TODO: SOMETHING WRONG HERE
 const BooksCreateView: FC<FormikProps<Values>> = ({
   handleChange,
   handleSubmit,
@@ -15,35 +14,41 @@ const BooksCreateView: FC<FormikProps<Values>> = ({
   isValid,
   status,
   values: { author, title },
-}) => (
-  <View>
-    <TextInput
-      editable={!isSubmitting}
-      onChangeText={handleChange('author')}
-      selectTextOnFocus={!isSubmitting}
-      style={styles.rootInput}
-      value={author}
-    />
-    <TextInput
-      editable={!isSubmitting}
-      onChangeText={handleChange('title')}
-      selectTextOnFocus={!isSubmitting}
-      style={styles.rootInput}
-      value={title}
-    />
-    {status !== undefined && (
-      <View style={styles.rootError}>
-        <Text>Error Creating</Text>
-      </View>
-    )}
-    <TouchableOpacity
-      disabled={!isValid || isSubmitting}
-      onPress={handleSubmit}
-      style={[styles.rootSubmit, (!isValid || isSubmitting) && styles.rootSubmitDisabled]}
-    >
-      <Text>Create</Text>
-    </TouchableOpacity>
-  </View>
-);
+}) => {
+  const handlePress = useCallback((): void => {
+    handleSubmit();
+  }, [handleSubmit]);
+
+  return (
+    <View>
+      <TextInput
+        editable={!isSubmitting}
+        onChangeText={handleChange('author')}
+        selectTextOnFocus={!isSubmitting}
+        style={styles.rootInput}
+        value={author}
+      />
+      <TextInput
+        editable={!isSubmitting}
+        onChangeText={handleChange('title')}
+        selectTextOnFocus={!isSubmitting}
+        style={styles.rootInput}
+        value={title}
+      />
+      {status !== undefined && (
+        <View style={styles.rootError}>
+          <Text>Error Creating</Text>
+        </View>
+      )}
+      <TouchableOpacity
+        disabled={!isValid || isSubmitting}
+        onPress={handlePress}
+        style={[styles.rootSubmit, (!isValid || isSubmitting) && styles.rootSubmitDisabled]}
+      >
+        <Text>Create</Text>
+      </TouchableOpacity>
+    </View>
+  );
+};
 
 export default BooksCreateView;
