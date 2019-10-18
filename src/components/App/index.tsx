@@ -5,10 +5,11 @@ import { persistCache } from 'apollo-cache-persist';
 import { PersistedData, PersistentStorage } from 'apollo-cache-persist/types';
 import React, { FC, useEffect, useState } from 'react';
 import { Text } from 'react-native';
-import { Provider } from 'react-redux';
+import { Provider, useSelector } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
-import client, { cache } from '../../graphql/client';
+import client, { cache, queueLink } from '../../graphql/client';
 import store, { persistor } from '../../store';
+import { getOnline } from '../../store/ducks/online';
 import AppBooks from './AppBooks';
 import AppBooksCreate from './AppBooksCreate';
 import AppOnline from './AppOnline';
@@ -23,9 +24,10 @@ const AppUsingReduxUsingApollo: FC = () => {
   );
 };
 
-// TODO: QUEUE
 const AppUsingRedux: FC = () => {
+  const online = useSelector(getOnline);
   const [cachePersisted, setCachePersisted] = useState(false);
+  // APOLLO CLIENT PERSIST
   useEffect(() => {
     const execute = async (): Promise<void> => {
       await persistCache({
@@ -36,6 +38,14 @@ const AppUsingRedux: FC = () => {
     };
     execute();
   }, []);
+  // APOLLO CLIENT QUEUE
+  useEffect(() => {
+    if (online) {
+      queueLink.open();
+    } else {
+      queueLink.close();
+    }
+  }, [online]);
 
   if (!cachePersisted) {
     return <Text>Loading Apollo Client Persistence or Online</Text>;

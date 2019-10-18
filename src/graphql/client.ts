@@ -10,6 +10,7 @@ import { ApolloLink } from 'apollo-link';
 const URI = 'http://localhost:5000/graphql';
 
 export const cache = new InMemoryCache();
+export const queueLink = new QueueLink();
 
 export default new ApolloClient({
   link: ApolloLink.from([
@@ -22,7 +23,7 @@ export default new ApolloClient({
       // eslint-disable-next-line
       if (networkError) console.log(`[Network error]: ${networkError}`);
     }),
-    new QueueLink(),
+    queueLink,
     new SerializingLink(),
     new RetryLink(),
     new HttpLink({
