@@ -16,7 +16,11 @@ export const queueLink = new QueueLink();
 
 export default new ApolloClient({
   link: ApolloLink.from([
-    onError(({ graphQLErrors, networkError }) => {
+    onError(({ graphQLErrors, operation, networkError }) => {
+      // TODO: HANDLE OFFLINE OPERATIONS
+      // TODO: DO NOT TRACK WHEN ONLINE
+      const context = operation.getContext();
+      console.log(context);
       if (graphQLErrors)
         graphQLErrors.forEach(({ message, locations, path }) =>
           // eslint-disable-next-line

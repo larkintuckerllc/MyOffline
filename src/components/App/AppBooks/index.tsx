@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import React, { FC } from 'react';
+import { useSelector } from 'react-redux';
 import { ScrollView, Text } from 'react-native';
 import {
   Book,
@@ -10,6 +11,7 @@ import {
   BOOKS_DELETE,
   handleBooksDeleteUpdate,
 } from '../../../graphql/books';
+import { getOnline } from '../../../store/ducks/online';
 import styles from './styles';
 import AppBooksBook from './AppBooksBook';
 
@@ -24,11 +26,12 @@ const bookSort = (a: Book, b: Book): number => {
 };
 
 const AppBooks: FC = () => {
+  const online = useSelector(getOnline);
   const { loading, error, data } = useQuery<BooksData>(BOOKS);
   const [booksDelete] = useMutation<BooksDeleteData, BooksDeleteVariables>(BOOKS_DELETE, {
     context: {
       serializationKey: 'MUTATION',
-      tracked: true,
+      tracked: !online,
     },
     update: handleBooksDeleteUpdate,
   });

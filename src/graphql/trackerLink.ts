@@ -4,7 +4,7 @@ import uuidv4 from 'uuid/v4';
 import { ActionType } from '../store/ducks';
 import { trackedQueriesAdd, trackedQueriesRemove } from '../store/ducks/trackedQueries';
 
-export default (dispatch: Dispatch<ActionType>) =>
+export default (dispatch: Dispatch<ActionType>): ApolloLink =>
   new ApolloLink((operation, forward) => {
     if (forward === undefined) {
       return null;
@@ -15,7 +15,7 @@ export default (dispatch: Dispatch<ActionType>) =>
     const context = operation.getContext();
     const contextJSON = JSON.stringify(context);
     const id = uuidv4();
-    if (context.tracked !== undefined) {
+    if (context.tracked === true) {
       dispatch(
         trackedQueriesAdd({
           contextJSON,
@@ -27,7 +27,7 @@ export default (dispatch: Dispatch<ActionType>) =>
       );
     }
     return forward(operation).map(data => {
-      if (context.tracked !== undefined) {
+      if (context.tracked === true) {
         dispatch(trackedQueriesRemove(id));
       }
       return data;

@@ -34,7 +34,7 @@ const AppBooksCreate: FC = () => {
   const [booksCreate] = useMutation<BooksCreateData, BooksCreateVariables>(BOOKS_CREATE, {
     context: {
       serializationKey: 'MUTATION',
-      tracked: true,
+      tracked: !online,
     },
     update: handleBooksCreateUpdate,
   });
