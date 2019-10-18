@@ -32,6 +32,10 @@ const validate = ({ author, title }: Values): FormikErrors<Values> => {
 const AppBooksCreate: FC = () => {
   const online = useSelector(getOnline);
   const [booksCreate] = useMutation<BooksCreateData, BooksCreateVariables>(BOOKS_CREATE, {
+    context: {
+      serializationKey: 'MUTATION',
+      tracked: true,
+    },
     update: handleBooksCreateUpdate,
   });
   const handleSubmit = useCallback(

@@ -26,6 +26,10 @@ const bookSort = (a: Book, b: Book): number => {
 const AppBooks: FC = () => {
   const { loading, error, data } = useQuery<BooksData>(BOOKS);
   const [booksDelete] = useMutation<BooksDeleteData, BooksDeleteVariables>(BOOKS_DELETE, {
+    context: {
+      serializationKey: 'MUTATION',
+      tracked: true,
+    },
     update: handleBooksDeleteUpdate,
   });
   if (loading) return <Text>Loading...</Text>;
