@@ -25,7 +25,7 @@ const AppUsingReduxUsingApollo: FC = () => {
   const [trackedLoaded, setTrackedLoaded] = useState(false);
   const [onlineQueryFailed, setOnlineQueryFailed] = useState(false);
 
-  // TRACKED QUERIES
+  // TRACKED QUERIES (ONLY ON FIRST LOAD)
   useEffect(() => {
     const execute = async (): Promise<void> => {
       // eslint-disable-next-line

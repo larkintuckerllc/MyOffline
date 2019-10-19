@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ScrollView, Text, View } from 'react-native';
 import {
@@ -28,30 +28,35 @@ const bookSort = (a: Book, b: Book): number => {
 const AppBooks: FC = () => {
   const online = useSelector(getOnline);
   const { loading, error, data } = useQuery<BooksData>(BOOKS);
-  const [booksDelete, { error: errorDelete }] = useMutation<BooksDeleteData, BooksDeleteVariables>(
-    BOOKS_DELETE,
-    {
-      context: {
-        serializationKey: 'MUTATION',
-        tracked: !online,
-      },
-      update: handleBooksDeleteUpdate,
-    }
-  );
+  const [booksDelete] = useMutation<BooksDeleteData, BooksDeleteVariables>(BOOKS_DELETE, {
+    context: {
+      serializationKey: 'MUTATION',
+      tracked: !online,
+    },
+    update: handleBooksDeleteUpdate,
+  });
   if (loading) return <Text>Loading...</Text>;
   if (error || data === undefined) return <Text>Error :(</Text>; // UNEXPECTED AS CACHED
   const sortedBooks = data.books.sort(bookSort); // CANNOT USE USEMEMO HERE
+  const [errorDelete, setErrorDelete] = useState(false);
 
   return (
     <>
-      {errorDelete !== undefined && (
+      {errorDelete && (
         <View style={styles.rootError}>
           <Text>Error Deleting</Text>
         </View>
       )}
       <ScrollView style={styles.rootBooks}>
         {sortedBooks.map(({ author, id, title }) => (
-          <AppBooksBook author={author} booksDelete={booksDelete} key={id} id={id} title={title} />
+          <AppBooksBook
+            author={author}
+            booksDelete={booksDelete}
+            key={id}
+            id={id}
+            setErrorDelete={setErrorDelete}
+            title={title}
+          />
         ))}
       </ScrollView>
     </>

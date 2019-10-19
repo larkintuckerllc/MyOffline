@@ -1,5 +1,5 @@
 import { ExecutionResult, MutationFunctionOptions } from '@apollo/react-common';
-import React, { FC, useCallback, useState } from 'react';
+import React, { FC, useCallback } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import styles from './styles';
@@ -16,16 +16,14 @@ interface Props {
     options: MutationFunctionOptions<BooksDeleteData, BooksDeleteVariables>
   ) => Promise<ExecutionResult<BooksDeleteData>>;
   id: string;
+  setErrorDelete: (flag: boolean) => void;
   title: string;
 }
 
-const AppBooksBook: FC<Props> = ({ author, booksDelete, id, title }) => {
+const AppBooksBook: FC<Props> = ({ author, booksDelete, id, setErrorDelete, title }) => {
   const online = useSelector(getOnline);
-  const [submitting, setSubmitting] = useState(false);
-  const [errored, setErrored] = useState(false);
   const handlePress = useCallback(async (): Promise<void> => {
-    setErrored(false);
-    setSubmitting(true);
+    setErrorDelete(false);
     const book = {
       id,
     };
@@ -35,9 +33,11 @@ const AppBooksBook: FC<Props> = ({ author, booksDelete, id, title }) => {
         variables: book,
       });
     } catch (err) {
-      // DO NOTHING
+      if (online) {
+        setErrorDelete(true);
+      }
     }
-  }, [booksDelete, online, setErrored, setSubmitting]);
+  }, [booksDelete, online, setErrorDelete]);
 
   return (
     <View style={styles.root}>
@@ -53,9 +53,8 @@ const AppBooksBook: FC<Props> = ({ author, booksDelete, id, title }) => {
         title:
         {title}
       </Text>
-      {errored && <Text style={styles.rootError}>Delete Error</Text>}
-      <TouchableOpacity disabled={submitting} onPress={handlePress}>
-        <Text style={submitting && styles.rootDeleteText}>Delete</Text>
+      <TouchableOpacity onPress={handlePress}>
+        <Text>Delete</Text>
       </TouchableOpacity>
     </View>
   );

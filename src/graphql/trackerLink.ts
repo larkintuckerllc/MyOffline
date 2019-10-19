@@ -15,7 +15,7 @@ export default (dispatch: Dispatch<ActionType>): ApolloLink =>
     const context = operation.getContext();
     const contextJSON = JSON.stringify(context);
     const id = uuidv4();
-    if (context.tracked === true) {
+    if (context.tracked) {
       dispatch(
         trackedQueriesAdd({
           contextJSON,
@@ -26,8 +26,16 @@ export default (dispatch: Dispatch<ActionType>): ApolloLink =>
         })
       );
     }
-    return forward(operation).map(data => {
-      if (context.tracked === true) {
+    const observer = forward(operation);
+    observer.subscribe({
+      error: () => {
+        if (context.tracked) {
+          dispatch(trackedQueriesRemove(id));
+        }
+      },
+    });
+    return observer.map(data => {
+      if (context.tracked) {
         dispatch(trackedQueriesRemove(id));
       }
       return data;
