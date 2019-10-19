@@ -35,11 +35,11 @@ const AppBooks: FC = () => {
     },
     update: handleBooksDeleteUpdate,
   });
+  const [errorDelete, setErrorDelete] = useState(false);
+
   if (loading) return <Text>Loading...</Text>;
   if (error || data === undefined) return <Text>Error :(</Text>; // UNEXPECTED AS CACHED
   const sortedBooks = data.books.sort(bookSort); // CANNOT USE USEMEMO HERE
-  const [errorDelete, setErrorDelete] = useState(false);
-
   return (
     <>
       {errorDelete && (
