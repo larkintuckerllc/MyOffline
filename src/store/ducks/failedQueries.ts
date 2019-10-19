@@ -11,19 +11,18 @@ interface FailedQuery {
 
 // ACTIONS
 const FAILED_QUERIES_ADD = 'FAILED_QUERIES_ADD';
-const FAILED_QUERIES_REMOVE = 'FAILED_QUERIES_REMOVE';
+const FAILED_QUERIES_REMOVE_ALL = 'FAILED_QUERIES_REMOVE_ALL';
 
 interface FailedQueriesAdd {
   payload: FailedQuery;
   type: typeof FAILED_QUERIES_ADD;
 }
 
-interface FailedQueriesRemove {
-  payload: string;
-  type: typeof FAILED_QUERIES_REMOVE;
+interface FailedQueriesRemoveAll {
+  type: typeof FAILED_QUERIES_REMOVE_ALL;
 }
 
-export type FailedQueriesActionType = FailedQueriesAdd | FailedQueriesRemove;
+export type FailedQueriesActionType = FailedQueriesAdd | FailedQueriesRemoveAll;
 
 // ACTION CREATORS
 export const failedQueriesAdd = (failedQuery: FailedQuery): FailedQueriesAdd => ({
@@ -31,9 +30,8 @@ export const failedQueriesAdd = (failedQuery: FailedQuery): FailedQueriesAdd => 
   type: FAILED_QUERIES_ADD,
 });
 
-export const failedQueriesRemove = (id: string): FailedQueriesRemove => ({
-  payload: id,
-  type: FAILED_QUERIES_REMOVE,
+export const failedQueriesRemoveAll = (): FailedQueriesRemoveAll => ({
+  type: FAILED_QUERIES_REMOVE_ALL,
 });
 
 // REDUCERS
@@ -57,12 +55,8 @@ const byId = (state: FailedQueriesById = {}, action: ActionType): FailedQueriesB
         [action.payload.id]: action.payload,
       };
       return newState;
-    case FAILED_QUERIES_REMOVE:
-      newState = {
-        ...state,
-      };
-      delete newState[action.payload];
-      return newState;
+    case FAILED_QUERIES_REMOVE_ALL:
+      return {};
     default:
       return state;
   }
@@ -74,9 +68,8 @@ const ids = (state: FailedQueriesIds = [], action: ActionType): FailedQueriesIds
     case FAILED_QUERIES_ADD:
       newState = [...state, action.payload.id];
       return newState;
-    case FAILED_QUERIES_REMOVE:
-      newState = state.filter(id => id !== action.payload);
-      return newState;
+    case FAILED_QUERIES_REMOVE_ALL:
+      return [];
     default:
       return state;
   }

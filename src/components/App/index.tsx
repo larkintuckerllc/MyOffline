@@ -4,7 +4,7 @@ import { NormalizedCacheObject } from 'apollo-cache-inmemory';
 import { persistCache } from 'apollo-cache-persist';
 import { PersistedData, PersistentStorage } from 'apollo-cache-persist/types';
 import React, { FC, useEffect, useState } from 'react';
-import { Text } from 'react-native';
+import { Text, View } from 'react-native';
 import { Provider, useDispatch, useSelector } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import client, { cache, queueLink } from '../../graphql/client';
@@ -12,10 +12,12 @@ import store, { persistor } from '../../store';
 import { getOnline } from '../../store/ducks/online';
 import AppBooks from './AppBooks';
 import AppBooksCreate from './AppBooksCreate';
+import AppFailedQueries from './AppFailedQueries';
 import AppOnline from './AppOnline';
 import { getTrackedQueries, trackedQueriesRemove } from '../../store/ducks/trackedQueries';
 import { BOOKS } from '../../graphql/books';
 import { updateHandlerByName } from '../../graphql';
+import styles from './styles';
 
 const AppUsingReduxUsingApollo: FC = () => {
   const apolloClient = useApolloClient();
@@ -72,11 +74,12 @@ const AppUsingReduxUsingApollo: FC = () => {
     return <Text>Error Online Query</Text>;
   }
   return (
-    <>
+    <View style={styles.root}>
+      <AppFailedQueries />
       <AppOnline />
       <AppBooksCreate />
       <AppBooks />
-    </>
+    </View>
   );
 };
 
