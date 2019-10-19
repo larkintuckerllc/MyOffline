@@ -12,6 +12,7 @@ const persistConfig = {
   key: 'root',
   storage: AsyncStorage,
   whitelist: ['online', 'trackedQueries'],
+  // whitelist: ['online'],
 };
 
 const persistedReducer = persistReducer(persistConfig, reducer);

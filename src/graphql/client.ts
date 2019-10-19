@@ -22,6 +22,7 @@ export default new ApolloClient({
       if (tracked === true) {
         // TODO: DISPATCH EVENTS
         console.log('TRACKED');
+        console.log(context.trackedId);
       }
     }),
     trackerLink(store.dispatch),
