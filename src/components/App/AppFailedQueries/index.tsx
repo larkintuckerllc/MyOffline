@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Modal, Text, TouchableOpacity, View } from 'react-native';
+import { Modal, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { failedQueriesRemoveAll, getFailedQueries } from '../../../store/ducks/failedQueries';
 import styles from './styles';
@@ -17,7 +17,20 @@ const AppFailedQueries: FC = () => {
         <TouchableOpacity onPress={handlePress} style={styles.rootClose}>
           <Text>Close</Text>
         </TouchableOpacity>
-        <Text>TEST</Text>
+        <ScrollView style={styles.rootFailedQueries}>
+          {failedQueries.map(failedQuery => (
+            <View key={failedQuery.id} style={styles.rootFailedQueriesQuery}>
+              <Text>
+                name:
+                {failedQuery.name}
+              </Text>
+              <Text>
+                variables:
+                {failedQuery.variablesJSON}
+              </Text>
+            </View>
+          ))}
+        </ScrollView>
       </View>
     </Modal>
   );

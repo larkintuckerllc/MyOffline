@@ -11,4 +11,10 @@ export default StyleSheet.create({
     marginTop: 30,
     padding: 30,
   },
+  rootFailedQueries: {
+    flex: 1,
+  },
+  rootFailedQueriesQuery: {
+    marginTop: 30,
+  },
 });
