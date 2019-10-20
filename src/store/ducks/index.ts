@@ -6,24 +6,24 @@ import failedQueries, { FailedQueriesActionType, FailedQueriesState } from './fa
 // eslint-disable-next-line
 import online, { OnlineActionType, OnlineState } from './online';
 // eslint-disable-next-line
-import lastModified, { LastModifiedActionType, LastModifiedState } from './lastModified';
+import booksLastModified, { BooksLastModifiedActionType, BooksLastModifiedState } from './booksLastModified';
 
 export type ActionType =
   | OnlineActionType
   | TrackedQueriesActionType
   | FailedQueriesActionType
-  | LastModifiedActionType;
+  | BooksLastModifiedActionType;
 
 export interface State {
   failedQueries: FailedQueriesState;
-  lastModified: LastModifiedState;
+  booksLastModified: BooksLastModifiedState;
   online: OnlineState;
   trackedQueries: TrackedQueriesState;
 }
 
 export default combineReducers({
   failedQueries,
-  lastModified,
+  booksLastModified,
   online,
   trackedQueries,
 });
