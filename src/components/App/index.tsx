@@ -54,7 +54,6 @@ const AppUsingReduxUsingApollo: FC = () => {
           // ALLOW TRACKED QUERIES TO FAIL
         }
         try {
-          await cache.reset(); // TODO: REMOVE WITH DIFF QUERY
           await apolloClient.query({
             fetchPolicy: 'network-only',
             query: BOOKS,

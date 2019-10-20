@@ -11,7 +11,7 @@ interface MyWindow extends Window {
 const persistConfig = {
   key: 'root',
   storage: AsyncStorage,
-  whitelist: ['online', 'trackedQueries'],
+  whitelist: ['booksLastModified', 'online', 'trackedQueries'],
 };
 
 const persistedReducer = persistReducer(persistConfig, reducer);

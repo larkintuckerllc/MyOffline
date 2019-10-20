@@ -7,6 +7,7 @@ import SerializingLink from 'apollo-link-serialize';
 import { ApolloLink } from 'apollo-link';
 import trackerLink from './trackerLink';
 import trackerErrorLink from './trackerErrorLink';
+import diffLink from './diffLink';
 
 const URI = 'http://localhost:5000/graphql';
 
@@ -14,6 +15,7 @@ export const cache = new InMemoryCache();
 export const queueLink = new QueueLink();
 export default new ApolloClient({
   link: ApolloLink.from([
+    diffLink,
     trackerErrorLink,
     trackerLink,
     queueLink,
