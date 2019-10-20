@@ -6,7 +6,10 @@ import failedQueries, { FailedQueriesActionType, FailedQueriesState } from './fa
 // eslint-disable-next-line
 import online, { OnlineActionType, OnlineState } from './online';
 // eslint-disable-next-line
-import booksLastModified, { BooksLastModifiedActionType, BooksLastModifiedState } from './booksLastModified';
+import booksLastModified, {
+  BooksLastModifiedActionType,
+  BooksLastModifiedState,
+} from './booksLastModified';
 
 export type ActionType =
   | OnlineActionType
