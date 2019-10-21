@@ -5,9 +5,6 @@ import { BOOKS, BOOKS_UPDATE, BooksData, BooksUpdateData } from './books';
 import store from '../store';
 import { getBooksLastModified, setBooksLastModified } from '../store/ducks/booksLastModified';
 
-// TODO: WORRY ABOUT DELETING UNUSED
-// TODO: WORRY ABOUT CREATE DUPES
-
 // eslint-disable-next-line
 type Data = { [key: string]: any };
 
