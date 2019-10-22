@@ -9,9 +9,11 @@ import {
   BooksPageData,
   BooksUpdateData,
 } from './books';
+// eslint-disable-next-line
+import client from '../graphql/client';
 import store from '../store';
 import { getBooksLastModified, setBooksLastModified } from '../store/ducks/booksLastModified';
-import { getPagePage } from '../store/ducks/pagePage';
+import { getPagePage, setPagePage } from '../store/ducks/pagePage';
 
 // eslint-disable-next-line
 type Data = { [key: string]: any };
@@ -57,6 +59,7 @@ const transformedData = (
 ): Data => {
   switch (operationName) {
     case 'books': {
+      console.log('SHIT');
       const booksLastModified = getBooksLastModified(store.getState());
       let booksCacheData: BooksData | null;
       // FIRST LOAD
@@ -64,7 +67,25 @@ const transformedData = (
         const {
           booksPage: { books, count },
         } = data as BooksPageData;
-        dispatch(setBooksLastModified(start));
+        const state = store.getState();
+        const pagePage = getPagePage(state);
+        if (pagePage === 0) {
+          console.log('SHIT 2');
+          dispatch(setPagePage(1));
+          // TODO: WORRY ABOUT ERROR
+          // TODO: START ASYNC
+          setTimeout(() => {
+            client
+              .query({
+                fetchPolicy: 'network-only',
+                query: BOOKS,
+              })
+              .catch(err => console.log('WTF'));
+            //
+          }, 0);
+        }
+        // dispatch(setBooksLastModified(start));
+        // TODO: USE COUNT
         return {
           books,
         };
@@ -102,6 +123,7 @@ const transformedData = (
 
 export default new ApolloLink((operation, forward) => {
   const { operationName } = operation;
+  console.log(operationName);
   const context = operation.getContext();
   const { cache } = context as ApolloClient<object>;
   const start = Date.now();
