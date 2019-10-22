@@ -37,6 +37,7 @@ const transformedData = (
     case 'books': {
       const { booksUpdate } = data as BooksUpdateData;
       const booksLastModified = getBooksLastModified(store.getState());
+      let booksCacheData: BooksData | null;
       // FIRST LOAD
       if (booksLastModified === 0) {
         dispatch(setBooksLastModified(start));
@@ -46,7 +47,7 @@ const transformedData = (
       }
       // SUBSEQUENT LOADS
       dispatch(setBooksLastModified(start));
-      const booksCacheData = cache.readQuery<BooksData>({ query: BOOKS });
+      booksCacheData = cache.readQuery<BooksData>({ query: BOOKS });
       if (booksCacheData === null) {
         throw new Error(); // UNEXPECTED
       }
