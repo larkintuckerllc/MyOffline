@@ -14,7 +14,7 @@ import client from '../graphql/client';
 import store from '../store';
 import { getBooksLastModified, setBooksLastModified } from '../store/ducks/booksLastModified';
 import { getPagePage, setPagePage } from '../store/ducks/pagePage';
-import { getPageCount, setPageCount } from '../store/ducks/pageCount';
+import { setPageCount } from '../store/ducks/pageCount';
 
 // eslint-disable-next-line
 type Data = { [key: string]: any };
@@ -69,9 +69,12 @@ const transformedData = (
         } = data as BooksPageData;
         const state = store.getState();
         const pagePage = getPagePage(state);
-        if (pagePage === 0) {
+        // TODO: WORRY ABOUND COUNT CHANGIng
+        const lastPage = Math.floor(count / FIRST);
+        if (pagePage < lastPage) {
+          // TODO: LOADING
           dispatch(setPageCount(count));
-          dispatch(setPagePage(1));
+          dispatch(setPagePage(pagePage + 1));
           // TODO: ERROR
           setTimeout(() => {
             client
@@ -83,8 +86,7 @@ const transformedData = (
             //
           }, 0);
         }
-        // dispatch(setBooksLastModified(start));
-        // TODO: USE COUNT
+        // dispatch(setBooksLastModified(start)); // TODO
         return {
           books,
         };
