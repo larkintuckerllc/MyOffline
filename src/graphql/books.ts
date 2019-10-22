@@ -27,6 +27,15 @@ export interface BooksData {
   books: Book[];
 }
 
+interface BooksPage {
+  books: Book[];
+  count: number;
+}
+
+export interface BooksPageData {
+  booksPage: BooksPage;
+}
+
 export interface BooksUpdateData {
   booksUpdate: BookUpdate[];
 }
