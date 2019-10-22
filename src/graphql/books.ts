@@ -95,6 +95,7 @@ export const BOOKS_PAGE = gql`
         author
         id
         title
+        __typename
       }
       count
     }
