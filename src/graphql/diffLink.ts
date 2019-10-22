@@ -16,8 +16,6 @@ const mutateOperation = (operation: Operation): void => {
   switch (operationName) {
     case 'books': {
       const booksLastModified = getBooksLastModified(store.getState());
-      console.log('WHAT');
-      console.log(booksLastModified);
       mutatedOperation.operationName = 'booksUpdate';
       mutatedOperation.query = BOOKS_UPDATE;
       mutatedOperation.variables = {
