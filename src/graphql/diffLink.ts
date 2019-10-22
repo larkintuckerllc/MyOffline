@@ -1,12 +1,21 @@
 import { ApolloCache } from 'apollo-cache';
 import { ApolloClient } from 'apollo-client';
 import { ApolloLink, Operation } from 'apollo-link';
-import { BOOKS, BOOKS_UPDATE, BooksData, BooksUpdateData } from './books';
+import {
+  BOOKS,
+  BOOKS_PAGE,
+  BOOKS_UPDATE,
+  BooksData,
+  BooksPageData,
+  BooksUpdateData,
+} from './books';
 import store from '../store';
 import { getBooksLastModified, setBooksLastModified } from '../store/ducks/booksLastModified';
 
 // eslint-disable-next-line
 type Data = { [key: string]: any };
+
+const FIRST = 2;
 
 const { dispatch } = store;
 
@@ -16,6 +25,15 @@ const mutateOperation = (operation: Operation): void => {
   switch (operationName) {
     case 'books': {
       const booksLastModified = getBooksLastModified(store.getState());
+      if (booksLastModified === 0) {
+        mutatedOperation.operationName = 'booksPage';
+        mutatedOperation.query = BOOKS_PAGE;
+        mutatedOperation.variables = {
+          offset: 0,
+          first: FIRST,
+        };
+        break;
+      }
       mutatedOperation.operationName = 'booksUpdate';
       mutatedOperation.query = BOOKS_UPDATE;
       mutatedOperation.variables = {
@@ -35,18 +53,24 @@ const transformedData = (
 ): Data => {
   switch (operationName) {
     case 'books': {
-      const { booksUpdate } = data as BooksUpdateData;
       const booksLastModified = getBooksLastModified(store.getState());
       let booksCacheData: BooksData | null;
       // FIRST LOAD
       if (booksLastModified === 0) {
         dispatch(setBooksLastModified(start));
+        // FUCK
+        const {
+          booksPage: { books, count },
+        } = data as BooksPageData;
+        console.log(books);
+        console.log(count);
         return {
-          books: booksUpdate.filter(({ isDeleted }) => !isDeleted),
+          books: [],
         };
       }
       // SUBSEQUENT LOADS
       dispatch(setBooksLastModified(start));
+      const { booksUpdate } = data as BooksUpdateData;
       booksCacheData = cache.readQuery<BooksData>({ query: BOOKS });
       if (booksCacheData === null) {
         throw new Error(); // UNEXPECTED
