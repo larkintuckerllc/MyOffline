@@ -26,11 +26,10 @@ const mutateOperation = (operation: Operation): void => {
     case 'books': {
       const booksLastModified = getBooksLastModified(store.getState());
       if (booksLastModified === 0) {
-        mutatedOperation.operationName = 'booksPage';
-        mutatedOperation.query = BOOKS_PAGE;
+        mutatedOperation.operationName = 'booksUpdate';
+        mutatedOperation.query = BOOKS_UPDATE;
         mutatedOperation.variables = {
-          offset: 0,
-          first: FIRST,
+          lastModified: booksLastModified.toString(),
         };
         break;
       }
@@ -57,13 +56,16 @@ const transformedData = (
       let booksCacheData: BooksData | null;
       // FIRST LOAD
       if (booksLastModified === 0) {
-        dispatch(setBooksLastModified(start));
+        console.log(data);
         // FUCK
+        /*
         const {
           booksPage: { books, count },
         } = data as BooksPageData;
         console.log(books);
         console.log(count);
+        */
+        dispatch(setBooksLastModified(start));
         return {
           books: [],
         };
