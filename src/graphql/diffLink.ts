@@ -14,6 +14,7 @@ import client from '../graphql/client';
 import store from '../store';
 import { getBooksLastModified, setBooksLastModified } from '../store/ducks/booksLastModified';
 import { getPagePage, setPagePage } from '../store/ducks/pagePage';
+import { getPageCount, setPageCount } from '../store/ducks/pageCount';
 
 // eslint-disable-next-line
 type Data = { [key: string]: any };
@@ -69,6 +70,7 @@ const transformedData = (
         const state = store.getState();
         const pagePage = getPagePage(state);
         if (pagePage === 0) {
+          dispatch(setPageCount(count));
           dispatch(setPagePage(1));
           // TODO: ERROR
           setTimeout(() => {
