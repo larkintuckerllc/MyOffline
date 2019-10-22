@@ -59,7 +59,6 @@ const transformedData = (
 ): Data => {
   switch (operationName) {
     case 'books': {
-      console.log('SHIT');
       const booksLastModified = getBooksLastModified(store.getState());
       let booksCacheData: BooksData | null;
       // FIRST LOAD
@@ -70,10 +69,8 @@ const transformedData = (
         const state = store.getState();
         const pagePage = getPagePage(state);
         if (pagePage === 0) {
-          console.log('SHIT 2');
           dispatch(setPagePage(1));
-          // TODO: WORRY ABOUT ERROR
-          // TODO: START ASYNC
+          // TODO: ERROR
           setTimeout(() => {
             client
               .query({
@@ -123,7 +120,6 @@ const transformedData = (
 
 export default new ApolloLink((operation, forward) => {
   const { operationName } = operation;
-  console.log(operationName);
   const context = operation.getContext();
   const { cache } = context as ApolloClient<object>;
   const start = Date.now();
