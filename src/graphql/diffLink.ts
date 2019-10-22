@@ -57,24 +57,12 @@ const transformedData = (
       let booksCacheData: BooksData | null;
       // FIRST LOAD
       if (booksLastModified === 0) {
-        console.log('DEBUG');
-        console.log(data);
         const {
           booksPage: { books, count },
         } = data as BooksPageData;
-        console.log(books);
-        console.log(count);
-        // FUCK
-        /*
-        const {
-          booksPage: { books, count },
-        } = data as BooksPageData;
-        console.log(books);
-        console.log(count);
-        */
         dispatch(setBooksLastModified(start));
         return {
-          books: [],
+          books,
         };
       }
       // SUBSEQUENT LOADS
