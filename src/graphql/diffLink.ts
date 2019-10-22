@@ -11,6 +11,7 @@ import {
 } from './books';
 import store from '../store';
 import { getBooksLastModified, setBooksLastModified } from '../store/ducks/booksLastModified';
+import { getPagePage } from '../store/ducks/pagePage';
 
 // eslint-disable-next-line
 type Data = { [key: string]: any };
@@ -24,12 +25,15 @@ const mutateOperation = (operation: Operation): void => {
   const { operationName } = operation;
   switch (operationName) {
     case 'books': {
-      const booksLastModified = getBooksLastModified(store.getState());
+      const state = store.getState();
+      const booksLastModified = getBooksLastModified(state);
+      const pagePage = getPagePage(state);
+      const offset = pagePage * FIRST;
       if (booksLastModified === 0) {
         mutatedOperation.operationName = 'booksPage';
         mutatedOperation.query = BOOKS_PAGE;
         mutatedOperation.variables = {
-          offset: 0,
+          offset,
           first: FIRST,
         };
         break;
