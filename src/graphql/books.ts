@@ -79,6 +79,19 @@ export const BOOKS_UPDATE = gql`
   }
 `;
 
+export const BOOKS_PAGE = gql`
+  query booksPage($offset: Int!, $first: Int!) {
+    booksPage(input: { offset: $offset, first: $first }) {
+      books {
+        author
+        id
+        title
+      }
+      count
+    }
+  }
+`;
+
 export const BOOKS_CREATE = gql`
   mutation booksCreate($id: String!, $author: String!, $title: String!) {
     booksCreate(input: { id: $id, author: $author, title: $title }) {
