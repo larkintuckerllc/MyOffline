@@ -27,19 +27,25 @@ const mutateOperation = (operation: Operation): void => {
   }
 };
 
-const transformedData = (operationName: string, cache: ApolloCache<object>, data: Data): Data => {
+const transformedData = (
+  operationName: string,
+  cache: ApolloCache<object>,
+  data: Data,
+  start: number
+): Data => {
   switch (operationName) {
     case 'books': {
       const { booksUpdate } = data as BooksUpdateData;
       const booksLastModified = getBooksLastModified(store.getState());
-      dispatch(setBooksLastModified(Date.now()));
       // FIRST LOAD
       if (booksLastModified === 0) {
+        dispatch(setBooksLastModified(start));
         return {
           books: booksUpdate.filter(({ isDeleted }) => !isDeleted),
         };
       }
       // SUBSEQUENT LOADS
+      dispatch(setBooksLastModified(start));
       const booksCacheData = cache.readQuery<BooksData>({ query: BOOKS });
       if (booksCacheData === null) {
         throw new Error(); // UNEXPECTED
@@ -72,6 +78,7 @@ export default new ApolloLink((operation, forward) => {
   const { operationName } = operation;
   const context = operation.getContext();
   const { cache } = context as ApolloClient<object>;
+  const start = Date.now();
   mutateOperation(operation); // NOT PURE
   return forward(operation).map(result => {
     const { data } = result;
@@ -79,7 +86,7 @@ export default new ApolloLink((operation, forward) => {
       return result;
     }
     return {
-      data: transformedData(operationName, cache, data),
+      data: transformedData(operationName, cache, data, start),
     };
   });
 });
