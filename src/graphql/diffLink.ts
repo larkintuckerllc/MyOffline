@@ -14,8 +14,8 @@ import {
 import client from '../graphql/client';
 import store from '../store';
 import { getBooksLastModified, setBooksLastModified } from '../store/ducks/booksLastModified';
-import { getPageError, setPageError } from '../store/ducks/pageError';
-import { getPageLoading, setPageLoading } from '../store/ducks/pageLoading';
+import { setPageError } from '../store/ducks/pageError';
+import { setPageLoading } from '../store/ducks/pageLoading';
 
 // eslint-disable-next-line
 type Data = { [key: string]: any };
@@ -72,7 +72,6 @@ const transformedData = (
       let booksCacheData: BooksData | null;
       let mutatedBooks: Book[];
 
-      // TODO: LOADING
       // TODO: ERROR
 
       // FIRST LOAD (PAGINATED)
