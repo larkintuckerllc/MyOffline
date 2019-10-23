@@ -12,6 +12,8 @@ import {
   handleBooksDeleteUpdate,
 } from '../../../graphql/books';
 import { getOnline } from '../../../store/ducks/online';
+import { getPageLoading } from '../../../store/ducks/pageLoading';
+import { getPageError } from '../../../store/ducks/pageError';
 import styles from './styles';
 import AppBooksBook from './AppBooksBook';
 
@@ -38,7 +40,7 @@ const AppBooks: FC = () => {
   const [errorDelete, setErrorDelete] = useState(false);
 
   if (loading) return <Text>Loading...</Text>;
-  if (error || data === undefined) return <Text>Error :(</Text>; // UNEXPECTED AS CACHED
+  if (error || data === undefined) return <Text>Error Online Query</Text>;
   const sortedBooks = data.books.sort(bookSort); // CANNOT USE USEMEMO HERE
   return (
     <>
