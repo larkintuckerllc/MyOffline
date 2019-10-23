@@ -14,8 +14,6 @@ import {
 import client from '../graphql/client';
 import store from '../store';
 import { getBooksLastModified, setBooksLastModified } from '../store/ducks/booksLastModified';
-import { getPageError, setPageError } from '../store/ducks/pageError';
-import { getPageLoading, setPageLoading } from '../store/ducks/pageLoading';
 
 // eslint-disable-next-line
 type Data = { [key: string]: any };
@@ -35,10 +33,6 @@ const mutateOperation = (operation: Operation): void => {
       const booksLastModified = getBooksLastModified(state);
       // FIRST LOAD
       if (booksLastModified === 0) {
-        // FIRST PAGE
-        if (currentPage === 0) {
-          dispatch(setPageLoading(true));
-        }
         const offset = currentPage * FIRST;
         mutatedOperation.operationName = 'booksPage';
         mutatedOperation.query = BOOKS_PAGE;
@@ -83,10 +77,6 @@ const transformedData = (
         const lastPage = Math.floor(count / FIRST);
         const isFirstPage = currentPage === 0;
         const isLastPage = currentPage === lastPage;
-        // FIRST PAGE
-        if (isFirstPage) {
-          firstStart = start;
-        }
         // QUEUE UP NEXT PAGE
         if (!isLastPage) {
           currentPage += 1;
@@ -99,7 +89,12 @@ const transformedData = (
         } else {
           // LAST PAGE RESET
           currentPage = 0;
-          dispatch(setPageLoading(false));
+        }
+        // HANDLE LAST MODIFIED
+        if (isFirstPage) {
+          firstStart = start;
+        }
+        if (isLastPage) {
           dispatch(setBooksLastModified(firstStart));
           firstStart = 0;
         }
