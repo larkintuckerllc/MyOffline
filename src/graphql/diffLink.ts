@@ -70,7 +70,7 @@ const transformedData = (
       // TODO: ERROR
       // dispatch(setBooksLastModified(start)); // TODO
 
-      // FIRST LOAD
+      // FIRST LOAD (PAGINATED)
       if (booksLastModified === 0) {
         const {
           booksPage: { books, count },
@@ -103,7 +103,7 @@ const transformedData = (
           books: mutatedBooks,
         };
       }
-      // SUBSEQUENT LOADS
+      // SUBSEQUENT LOADS (DIFFERENTIAL)
       dispatch(setBooksLastModified(start));
       const { booksUpdate } = data as BooksUpdateData;
       booksCacheData = cache.readQuery<BooksData>({ query: BOOKS });
