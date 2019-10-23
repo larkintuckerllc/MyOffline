@@ -1,11 +1,10 @@
+/* eslint-disable import/no-cycle */
 import { combineReducers } from 'redux';
-// eslint-disable-next-line
 import trackedQueries, { TrackedQueriesActionType, TrackedQueriesState } from './trackedQueries';
-// eslint-disable-next-line
 import failedQueries, { FailedQueriesActionType, FailedQueriesState } from './failedQueries';
-// eslint-disable-next-line
 import online, { OnlineActionType, OnlineState } from './online';
-// eslint-disable-next-line
+import pageError, { PageErrorActionType, PageErrorState } from './pageError';
+import pageLoading, { PageLoadingActionType, PageLoadingState } from './pageLoading';
 import booksLastModified, {
   BooksLastModifiedActionType,
   BooksLastModifiedState,
@@ -15,12 +14,16 @@ export type ActionType =
   | OnlineActionType
   | TrackedQueriesActionType
   | FailedQueriesActionType
-  | BooksLastModifiedActionType;
+  | BooksLastModifiedActionType
+  | PageErrorActionType
+  | PageLoadingActionType;
 
 export interface State {
   failedQueries: FailedQueriesState;
   booksLastModified: BooksLastModifiedState;
   online: OnlineState;
+  pageError: PageErrorState;
+  pageLoading: PageLoadingState;
   trackedQueries: TrackedQueriesState;
 }
 
@@ -28,5 +31,7 @@ export default combineReducers({
   failedQueries,
   booksLastModified,
   online,
+  pageError,
+  pageLoading,
   trackedQueries,
 });
