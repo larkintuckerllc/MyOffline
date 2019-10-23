@@ -67,11 +67,13 @@ const transformedData = (
 ): Data => {
   switch (operationName) {
     case 'books': {
-      const booksLastModified = getBooksLastModified(store.getState());
+      const state = store.getState();
+      const booksLastModified = getBooksLastModified(state);
       let booksCacheData: BooksData | null;
       let mutatedBooks: Book[];
 
       // TODO: ERROR
+      // TODO: SPLIT INTO MULTIPLE LINKS
 
       // FIRST LOAD (PAGINATED)
       if (booksLastModified === 0) {
