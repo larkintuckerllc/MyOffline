@@ -15,6 +15,7 @@ import AppBooksCreate from './AppBooksCreate';
 import AppFailedQueries from './AppFailedQueries';
 import AppOnline from './AppOnline';
 import { getTrackedQueries, trackedQueriesRemove } from '../../store/ducks/trackedQueries';
+import { getPageLoading } from '../../store/ducks/pageLoading';
 import { BOOKS } from '../../graphql/books';
 import { updateHandlerByName } from '../../graphql';
 import styles from './styles';
@@ -23,6 +24,7 @@ const AppUsingReduxUsingApollo: FC = () => {
   const apolloClient = useApolloClient();
   const dispatch = useDispatch();
   const online = useSelector(getOnline);
+  const pageLoading = useSelector(getPageLoading);
   const trackedQueries = useSelector(getTrackedQueries);
   const [trackedLoaded, setTrackedLoaded] = useState(false);
   const [onlineQueryFailed, setOnlineQueryFailed] = useState(false);
@@ -67,7 +69,7 @@ const AppUsingReduxUsingApollo: FC = () => {
     execute();
   }, []);
 
-  if (!trackedLoaded) {
+  if (!trackedLoaded || pageLoading) {
     return <Text>Loading Tracked Queries</Text>;
   }
   if (onlineQueryFailed) {
