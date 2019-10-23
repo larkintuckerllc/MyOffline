@@ -1,14 +1,27 @@
 import { ApolloCache } from 'apollo-cache';
 import { ApolloClient } from 'apollo-client';
 import { ApolloLink, Operation } from 'apollo-link';
-import { BOOKS, BOOKS_UPDATE, BooksData, BooksUpdateData } from './books';
+import {
+  Book,
+  BOOKS,
+  BOOKS_PAGE,
+  BOOKS_UPDATE,
+  BooksData,
+  BooksPageData,
+  BooksUpdateData,
+} from './books';
 // eslint-disable-next-line
 import client from '../graphql/client';
 import store from '../store';
 import { getBooksLastModified, setBooksLastModified } from '../store/ducks/booksLastModified';
+import { setPageLoading } from '../store/ducks/pageLoading';
 
 // eslint-disable-next-line
 type Data = { [key: string]: any };
+
+const FIRST = 2;
+let currentPage = 0;
+let firstStart = 0;
 
 const { dispatch } = store;
 
@@ -21,8 +34,20 @@ const mutateOperation = (operation: Operation): void => {
       const booksLastModified = getBooksLastModified(state);
       // FIRST LOAD
       if (booksLastModified === 0) {
+        // FIRST PAGE
+        if (currentPage === 0) {
+          dispatch(setPageLoading(true));
+        }
+        const offset = currentPage * FIRST;
+        mutatedOperation.operationName = 'booksPage';
+        mutatedOperation.query = BOOKS_PAGE;
+        mutatedOperation.variables = {
+          offset,
+          first: FIRST,
+        };
         break;
       }
+      // SUBSEQUENT LOADS
       mutatedOperation.operationName = 'booksUpdate';
       mutatedOperation.query = BOOKS_UPDATE;
       mutatedOperation.variables = {
@@ -44,18 +69,65 @@ const transformedData = (
     case 'books': {
       const state = store.getState();
       const booksLastModified = getBooksLastModified(state);
-      // FIRST LOAD
+      let booksCacheData: BooksData | null;
+      let mutatedBooks: Book[];
+
+      // TODO: ERROR
+      // TODO: SPLIT INTO MULTIPLE LINKS
+
+      // FIRST LOAD (PAGINATED)
       if (booksLastModified === 0) {
-        dispatch(setBooksLastModified(start));
-        break;
+        const {
+          booksPage: { books, count },
+        } = data as BooksPageData;
+        const lastPage = Math.floor(count / FIRST);
+        const isFirstPage = currentPage === 0;
+        const isLastPage = currentPage === lastPage;
+        // FIRST PAGE
+        if (isFirstPage) {
+          firstStart = start;
+        }
+        // QUEUE UP NEXT PAGE
+        if (!isLastPage) {
+          currentPage += 1;
+          setTimeout(() => {
+            client.query({
+              fetchPolicy: 'network-only',
+              query: BOOKS,
+            });
+          }, 0);
+        } else {
+          // LAST PAGE RESET
+          currentPage = 0;
+          dispatch(setBooksLastModified(firstStart));
+          firstStart = 0;
+          dispatch(setPageLoading(false));
+        }
+        // OUTPUT THE DATA
+        // FIRST PAGE
+        if (isFirstPage) {
+          return {
+            books,
+          };
+        }
+        // SUBSEQUENT PAGES
+        booksCacheData = cache.readQuery<BooksData>({ query: BOOKS });
+        if (booksCacheData === null) {
+          throw new Error(); // UNEXPECTED
+        }
+        mutatedBooks = [...booksCacheData.books, ...books];
+        return {
+          books: mutatedBooks,
+        };
       }
+      // SUBSEQUENT LOADS (DIFFERENTIAL)
       dispatch(setBooksLastModified(start));
       const { booksUpdate } = data as BooksUpdateData;
-      const booksCacheData = cache.readQuery<BooksData>({ query: BOOKS });
+      booksCacheData = cache.readQuery<BooksData>({ query: BOOKS });
       if (booksCacheData === null) {
         throw new Error(); // UNEXPECTED
       }
-      const mutatedBooks = [...booksCacheData.books];
+      mutatedBooks = [...booksCacheData.books];
       booksUpdate.forEach(bookUpdate => {
         const bookMutatedIndex = mutatedBooks.findIndex(book => book.id === bookUpdate.id);
         if (bookMutatedIndex === -1 && !bookUpdate.isDeleted) {
