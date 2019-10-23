@@ -77,8 +77,9 @@ const transformedData = (
         } = data as BooksPageData;
         const lastPage = Math.floor(count / FIRST);
         const isFirstPage = currentPage === 0;
+        const isLastPage = currentPage === lastPage;
         // QUEUE UP NEXT PAGE
-        if (currentPage < lastPage) {
+        if (!isLastPage) {
           currentPage += 1;
           setTimeout(() => {
             client.query({
