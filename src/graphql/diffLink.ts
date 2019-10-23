@@ -63,6 +63,11 @@ const transformedData = (
     case 'books': {
       const booksLastModified = getBooksLastModified(store.getState());
       let booksCacheData: BooksData | null;
+      // TODO: CACHE
+      // TODO: LOADING
+      // TODO: RESET
+      // TODO: ERROR
+      // dispatch(setBooksLastModified(start)); // TODO
       // FIRST LOAD
       if (booksLastModified === 0) {
         const {
@@ -70,24 +75,17 @@ const transformedData = (
         } = data as BooksPageData;
         const state = store.getState();
         const pagePage = getPagePage(state);
-        // TODO: CACHE
         const lastPage = Math.floor(count / FIRST);
+        // QUERY NEXT PAGE
         if (pagePage < lastPage) {
-          // TODO: LOADING
-          // TODO: RESET
           dispatch(setPagePage(pagePage + 1));
-          // TODO: ERROR
           setTimeout(() => {
-            client
-              .query({
-                fetchPolicy: 'network-only',
-                query: BOOKS,
-              })
-              .catch(err => console.log('WTF'));
-            //
+            client.query({
+              fetchPolicy: 'network-only',
+              query: BOOKS,
+            });
           }, 0);
         }
-        // dispatch(setBooksLastModified(start)); // TODO
         return {
           books,
         };
