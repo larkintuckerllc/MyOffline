@@ -2,6 +2,7 @@ import { ApolloCache } from 'apollo-cache';
 import { ApolloClient } from 'apollo-client';
 import { ApolloLink, Operation } from 'apollo-link';
 import {
+  Book,
   BOOKS,
   BOOKS_PAGE,
   BOOKS_UPDATE,
@@ -13,12 +14,12 @@ import {
 import client from '../graphql/client';
 import store from '../store';
 import { getBooksLastModified, setBooksLastModified } from '../store/ducks/booksLastModified';
-import { getPagePage, setPagePage } from '../store/ducks/pagePage';
 
 // eslint-disable-next-line
 type Data = { [key: string]: any };
 
 const FIRST = 2;
+let currentPage = 0;
 
 const { dispatch } = store;
 
@@ -31,8 +32,7 @@ const mutateOperation = (operation: Operation): void => {
       const booksLastModified = getBooksLastModified(state);
       // FIRST LOAD
       if (booksLastModified === 0) {
-        const pagePage = getPagePage(state);
-        const offset = pagePage * FIRST;
+        const offset = currentPage * FIRST;
         mutatedOperation.operationName = 'booksPage';
         mutatedOperation.query = BOOKS_PAGE;
         mutatedOperation.variables = {
@@ -63,22 +63,23 @@ const transformedData = (
     case 'books': {
       const booksLastModified = getBooksLastModified(store.getState());
       let booksCacheData: BooksData | null;
-      // TODO: CACHE
+      let mutatedBooks: Book[];
+
       // TODO: LOADING
       // TODO: RESET
       // TODO: ERROR
       // dispatch(setBooksLastModified(start)); // TODO
+
       // FIRST LOAD
       if (booksLastModified === 0) {
         const {
           booksPage: { books, count },
         } = data as BooksPageData;
-        const state = store.getState();
-        const pagePage = getPagePage(state);
         const lastPage = Math.floor(count / FIRST);
-        // QUERY NEXT PAGE
-        if (pagePage < lastPage) {
-          dispatch(setPagePage(pagePage + 1));
+        const isFirstPage = currentPage === 0;
+        // QUEUE UP NEXT PAGE
+        if (currentPage < lastPage) {
+          currentPage += 1;
           setTimeout(() => {
             client.query({
               fetchPolicy: 'network-only',
@@ -86,8 +87,20 @@ const transformedData = (
             });
           }, 0);
         }
+        // FIRST PAGE
+        if (isFirstPage) {
+          return {
+            books,
+          };
+        }
+        // SUBSEQUENT PAGES
+        booksCacheData = cache.readQuery<BooksData>({ query: BOOKS });
+        if (booksCacheData === null) {
+          throw new Error(); // UNEXPECTED
+        }
+        mutatedBooks = [...booksCacheData.books, ...books];
         return {
-          books,
+          books: mutatedBooks,
         };
       }
       // SUBSEQUENT LOADS
@@ -97,7 +110,7 @@ const transformedData = (
       if (booksCacheData === null) {
         throw new Error(); // UNEXPECTED
       }
-      const mutatedBooks = [...booksCacheData.books];
+      mutatedBooks = [...booksCacheData.books];
       booksUpdate.forEach(bookUpdate => {
         const bookMutatedIndex = mutatedBooks.findIndex(book => book.id === bookUpdate.id);
         if (bookMutatedIndex === -1 && !bookUpdate.isDeleted) {

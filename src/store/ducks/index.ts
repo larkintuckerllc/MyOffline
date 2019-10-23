@@ -10,21 +10,17 @@ import booksLastModified, {
   BooksLastModifiedActionType,
   BooksLastModifiedState,
 } from './booksLastModified';
-// eslint-disable-next-line
-import pagePage , { PagePageActionType, PagePageState } from './pagePage';
 
 export type ActionType =
   | OnlineActionType
   | TrackedQueriesActionType
   | FailedQueriesActionType
-  | BooksLastModifiedActionType
-  | PagePageActionType;
+  | BooksLastModifiedActionType;
 
 export interface State {
   failedQueries: FailedQueriesState;
   booksLastModified: BooksLastModifiedState;
   online: OnlineState;
-  pagePage: PagePageState;
   trackedQueries: TrackedQueriesState;
 }
 
@@ -32,6 +28,5 @@ export default combineReducers({
   failedQueries,
   booksLastModified,
   online,
-  pagePage,
   trackedQueries,
 });
