@@ -1,15 +1,7 @@
 import { ApolloCache } from 'apollo-cache';
 import { ApolloClient } from 'apollo-client';
 import { ApolloLink, Operation } from 'apollo-link';
-import {
-  Book,
-  BOOKS,
-  BOOKS_PAGE,
-  BOOKS_UPDATE,
-  BooksData,
-  BooksPageData,
-  BooksUpdateData,
-} from './books';
+import { BOOKS, BOOKS_PAGE, BooksData, BooksPageData } from './books';
 // eslint-disable-next-line
 import client from '../graphql/client';
 import store from '../store';
@@ -32,26 +24,23 @@ const mutateOperation = (operation: Operation): void => {
     case 'books': {
       const state = store.getState();
       const booksLastModified = getBooksLastModified(state);
-      // FIRST LOAD
-      if (booksLastModified === 0) {
-        // FIRST PAGE
-        if (currentPage === 0) {
-          dispatch(setPageLoading(true));
-        }
-        const offset = currentPage * FIRST;
-        mutatedOperation.operationName = 'booksPage';
-        mutatedOperation.query = BOOKS_PAGE;
-        mutatedOperation.variables = {
-          offset,
-          first: FIRST,
-        };
+
+      // SUBSEQUENT LOADS
+      if (booksLastModified !== 0) {
         break;
       }
-      // SUBSEQUENT LOADS
-      mutatedOperation.operationName = 'booksUpdate';
-      mutatedOperation.query = BOOKS_UPDATE;
+
+      // FIRST PAGE
+      if (currentPage === 0) {
+        dispatch(setPageLoading(true));
+      }
+
+      const offset = currentPage * FIRST;
+      mutatedOperation.operationName = 'booksPage';
+      mutatedOperation.query = BOOKS_PAGE;
       mutatedOperation.variables = {
-        lastModified: booksLastModified.toString(),
+        offset,
+        first: FIRST,
       };
       break;
     }
@@ -69,79 +58,58 @@ const transformedData = (
     case 'books': {
       const state = store.getState();
       const booksLastModified = getBooksLastModified(state);
-      let booksCacheData: BooksData | null;
-      let mutatedBooks: Book[];
 
       // TODO: ERROR
-      // TODO: SPLIT INTO MULTIPLE LINKS
 
-      // FIRST LOAD (PAGINATED)
-      if (booksLastModified === 0) {
-        const {
-          booksPage: { books, count },
-        } = data as BooksPageData;
-        const lastPage = Math.floor(count / FIRST);
-        const isFirstPage = currentPage === 0;
-        const isLastPage = currentPage === lastPage;
-        // FIRST PAGE
-        if (isFirstPage) {
-          firstStart = start;
-        }
-        // QUEUE UP NEXT PAGE
-        if (!isLastPage) {
-          currentPage += 1;
-          setTimeout(() => {
-            client.query({
-              fetchPolicy: 'network-only',
-              query: BOOKS,
-            });
-          }, 0);
-        } else {
-          // LAST PAGE RESET
-          currentPage = 0;
-          dispatch(setBooksLastModified(firstStart));
-          firstStart = 0;
-          dispatch(setPageLoading(false));
-        }
-        // OUTPUT THE DATA
-        // FIRST PAGE
-        if (isFirstPage) {
-          return {
-            books,
-          };
-        }
-        // SUBSEQUENT PAGES
-        booksCacheData = cache.readQuery<BooksData>({ query: BOOKS });
-        if (booksCacheData === null) {
-          throw new Error(); // UNEXPECTED
-        }
-        mutatedBooks = [...booksCacheData.books, ...books];
+      // SUBSEQUENTIAL LOADS
+      if (booksLastModified !== 0) {
+        break;
+      }
+
+      const {
+        booksPage: { books, count },
+      } = data as BooksPageData;
+      const lastPage = Math.floor(count / FIRST);
+      const isFirstPage = currentPage === 0;
+      const isLastPage = currentPage === lastPage;
+
+      // FIRST PAGE
+      if (isFirstPage) {
+        firstStart = start;
+      }
+
+      // LAST PAGE
+      if (isLastPage) {
+        currentPage = 0;
+        dispatch(setBooksLastModified(firstStart));
+        firstStart = 0;
+        dispatch(setPageLoading(false));
+      }
+
+      // QUEUE UP NEXT PAGE
+      if (!isLastPage) {
+        currentPage += 1;
+        setTimeout(() => {
+          client.query({
+            fetchPolicy: 'network-only',
+            query: BOOKS,
+          });
+        }, 0);
+      }
+
+      // FIRST PAGE
+      if (isFirstPage) {
         return {
-          books: mutatedBooks,
+          books,
         };
       }
-      // SUBSEQUENT LOADS (DIFFERENTIAL)
-      dispatch(setBooksLastModified(start));
-      const { booksUpdate } = data as BooksUpdateData;
-      booksCacheData = cache.readQuery<BooksData>({ query: BOOKS });
+
+      // SUBSEQUENT PAGES
+      const booksCacheData = cache.readQuery<BooksData>({ query: BOOKS });
       if (booksCacheData === null) {
         throw new Error(); // UNEXPECTED
       }
-      mutatedBooks = [...booksCacheData.books];
-      booksUpdate.forEach(bookUpdate => {
-        const bookMutatedIndex = mutatedBooks.findIndex(book => book.id === bookUpdate.id);
-        if (bookMutatedIndex === -1 && !bookUpdate.isDeleted) {
-          // CREATE
-          mutatedBooks.push(bookUpdate);
-        } else if (bookMutatedIndex !== -1 && bookUpdate.isDeleted) {
-          // DELETE
-          mutatedBooks.splice(bookMutatedIndex, 1);
-        } else if (bookMutatedIndex !== -1 && !bookUpdate.isDeleted) {
-          // UPDATE
-          mutatedBooks.splice(bookMutatedIndex, 1);
-          mutatedBooks.push(bookUpdate);
-        }
-      });
+      const mutatedBooks = [...booksCacheData.books, ...books];
       return {
         books: mutatedBooks,
       };
