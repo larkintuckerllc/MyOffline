@@ -8,6 +8,7 @@ import store from '../store';
 import { getBooksLastModified, setBooksLastModified } from '../store/ducks/booksLastModified';
 import { getPageCount, setPageCount } from '../store/ducks/pageCount';
 import { setPageLoading } from '../store/ducks/pageLoading';
+import { setPageError } from '../store/ducks/pageError';
 
 // eslint-disable-next-line
 type Data = { [key: string]: any };
@@ -33,6 +34,7 @@ const mutateOperation = (operation: Operation): void => {
 
       // FIRST PAGE
       if (pageCount === 0) {
+        dispatch(setPageError(false));
         dispatch(setPageLoading(true));
       }
 
