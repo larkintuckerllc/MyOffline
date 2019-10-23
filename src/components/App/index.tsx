@@ -16,6 +16,7 @@ import AppFailedQueries from './AppFailedQueries';
 import AppOnline from './AppOnline';
 import { getTrackedQueries, trackedQueriesRemove } from '../../store/ducks/trackedQueries';
 import { getPageLoading } from '../../store/ducks/pageLoading';
+import { getPageError } from '../../store/ducks/pageError';
 import { BOOKS } from '../../graphql/books';
 import { updateHandlerByName } from '../../graphql';
 import styles from './styles';
@@ -25,6 +26,7 @@ const AppUsingReduxUsingApollo: FC = () => {
   const dispatch = useDispatch();
   const online = useSelector(getOnline);
   const pageLoading = useSelector(getPageLoading);
+  const pageError = useSelector(getPageError);
   const trackedQueries = useSelector(getTrackedQueries);
   const [trackedLoaded, setTrackedLoaded] = useState(false);
   const [onlineQueryFailed, setOnlineQueryFailed] = useState(false);
@@ -69,14 +71,14 @@ const AppUsingReduxUsingApollo: FC = () => {
     };
     execute();
   }, []);
-  if (firstLoad && trackedLoaded && !onlineQueryFailed && !pageLoading) {
+  if (firstLoad && trackedLoaded && !onlineQueryFailed && !pageLoading && !pageError) {
     setFirstLoad(false);
   }
 
   if (firstLoad && (!trackedLoaded || pageLoading)) {
     return <Text>Loading Tracked Queries</Text>;
   }
-  if (onlineQueryFailed) {
+  if (firstLoad && (onlineQueryFailed || pageError)) {
     return <Text>Error Online Query</Text>;
   }
   return (
