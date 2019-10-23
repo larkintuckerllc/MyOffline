@@ -10,6 +10,7 @@ import trackerErrorLink from './trackerErrorLink';
 import diffLink from './diffLink';
 // eslint-disable-next-line
 import pageLink from './pageLink';
+import pageErrorLink from './pageErrorLink';
 
 const URI = 'http://localhost:5000/graphql';
 
@@ -17,6 +18,7 @@ export const cache = new InMemoryCache();
 export const queueLink = new QueueLink();
 export default new ApolloClient({
   link: ApolloLink.from([
+    pageErrorLink,
     pageLink,
     diffLink,
     trackerErrorLink,

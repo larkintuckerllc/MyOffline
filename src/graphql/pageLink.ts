@@ -59,8 +59,6 @@ const transformedData = (
       const state = store.getState();
       const booksLastModified = getBooksLastModified(state);
 
-      // TODO: ERROR
-
       // SUBSEQUENTIAL LOADS
       if (booksLastModified !== 0) {
         break;
@@ -82,7 +80,6 @@ const transformedData = (
       if (isLastPage) {
         currentPage = 0;
         dispatch(setBooksLastModified(firstStart));
-        firstStart = 0;
         dispatch(setPageLoading(false));
       }
 
