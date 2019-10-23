@@ -17,10 +17,12 @@ const mutateOperation = (operation: Operation): void => {
     case 'books': {
       const state = store.getState();
       const booksLastModified = getBooksLastModified(state);
+
       // FIRST LOAD
       if (booksLastModified === 0) {
         break;
       }
+
       mutatedOperation.operationName = 'booksUpdate';
       mutatedOperation.query = BOOKS_UPDATE;
       mutatedOperation.variables = {
@@ -42,11 +44,12 @@ const transformedData = (
     case 'books': {
       const state = store.getState();
       const booksLastModified = getBooksLastModified(state);
+
       // FIRST LOAD
       if (booksLastModified === 0) {
-        dispatch(setBooksLastModified(start));
         break;
       }
+
       dispatch(setBooksLastModified(start));
       const { booksUpdate } = data as BooksUpdateData;
       const booksCacheData = cache.readQuery<BooksData>({ query: BOOKS });
