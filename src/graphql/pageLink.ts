@@ -6,13 +6,13 @@ import { BOOKS, BOOKS_PAGE, BooksData, BooksPageData } from './books';
 import client from '../graphql/client';
 import store from '../store';
 import { getBooksLastModified, setBooksLastModified } from '../store/ducks/booksLastModified';
+import { getPageCount, setPageCount } from '../store/ducks/pageCount';
 import { setPageLoading } from '../store/ducks/pageLoading';
 
 // eslint-disable-next-line
 type Data = { [key: string]: any };
 
 const FIRST = 2;
-let currentPage = 0;
 let firstStart = 0;
 
 const { dispatch } = store;
@@ -24,6 +24,7 @@ const mutateOperation = (operation: Operation): void => {
     case 'books': {
       const state = store.getState();
       const booksLastModified = getBooksLastModified(state);
+      const pageCount = getPageCount(state);
 
       // SUBSEQUENT LOADS
       if (booksLastModified !== 0) {
@@ -31,11 +32,11 @@ const mutateOperation = (operation: Operation): void => {
       }
 
       // FIRST PAGE
-      if (currentPage === 0) {
+      if (pageCount === 0) {
         dispatch(setPageLoading(true));
       }
 
-      const offset = currentPage * FIRST;
+      const offset = pageCount * FIRST;
       mutatedOperation.operationName = 'booksPage';
       mutatedOperation.query = BOOKS_PAGE;
       mutatedOperation.variables = {
@@ -58,6 +59,7 @@ const transformedData = (
     case 'books': {
       const state = store.getState();
       const booksLastModified = getBooksLastModified(state);
+      const pageCount = getPageCount(state);
 
       // SUBSEQUENTIAL LOADS
       if (booksLastModified !== 0) {
@@ -68,8 +70,8 @@ const transformedData = (
         booksPage: { books, count },
       } = data as BooksPageData;
       const lastPage = Math.floor(count / FIRST);
-      const isFirstPage = currentPage === 0;
-      const isLastPage = currentPage === lastPage;
+      const isFirstPage = pageCount === 0;
+      const isLastPage = pageCount === lastPage;
 
       // FIRST PAGE
       if (isFirstPage) {
@@ -78,14 +80,14 @@ const transformedData = (
 
       // LAST PAGE
       if (isLastPage) {
-        currentPage = 0;
+        dispatch(setPageCount(0));
         dispatch(setBooksLastModified(firstStart));
         dispatch(setPageLoading(false));
       }
 
       // QUEUE UP NEXT PAGE
       if (!isLastPage) {
-        currentPage += 1;
+        dispatch(setPageCount(pageCount + 1));
         setTimeout(() => {
           client.query({
             fetchPolicy: 'network-only',
