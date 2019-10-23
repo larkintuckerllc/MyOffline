@@ -14,7 +14,6 @@ import client from '../graphql/client';
 import store from '../store';
 import { getBooksLastModified, setBooksLastModified } from '../store/ducks/booksLastModified';
 import { getPagePage, setPagePage } from '../store/ducks/pagePage';
-import { setPageCount } from '../store/ducks/pageCount';
 
 // eslint-disable-next-line
 type Data = { [key: string]: any };
@@ -30,9 +29,10 @@ const mutateOperation = (operation: Operation): void => {
     case 'books': {
       const state = store.getState();
       const booksLastModified = getBooksLastModified(state);
-      const pagePage = getPagePage(state);
-      const offset = pagePage * FIRST;
+      // FIRST LOAD
       if (booksLastModified === 0) {
+        const pagePage = getPagePage(state);
+        const offset = pagePage * FIRST;
         mutatedOperation.operationName = 'booksPage';
         mutatedOperation.query = BOOKS_PAGE;
         mutatedOperation.variables = {
@@ -41,6 +41,7 @@ const mutateOperation = (operation: Operation): void => {
         };
         break;
       }
+      // SUBSEQUENT LOADS
       mutatedOperation.operationName = 'booksUpdate';
       mutatedOperation.query = BOOKS_UPDATE;
       mutatedOperation.variables = {
@@ -69,11 +70,11 @@ const transformedData = (
         } = data as BooksPageData;
         const state = store.getState();
         const pagePage = getPagePage(state);
-        // TODO: WORRY ABOUND COUNT CHANGIng
+        // TODO: CACHE
         const lastPage = Math.floor(count / FIRST);
         if (pagePage < lastPage) {
           // TODO: LOADING
-          dispatch(setPageCount(count));
+          // TODO: RESET
           dispatch(setPagePage(pagePage + 1));
           // TODO: ERROR
           setTimeout(() => {
