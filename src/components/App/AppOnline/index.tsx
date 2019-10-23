@@ -7,6 +7,7 @@ import { ActionType } from '../../../store/ducks';
 import { getOnline, setOnline } from '../../../store/ducks/online';
 import { setBooksLastModified } from '../../../store/ducks/booksLastModified';
 import { getPageLoading } from '../../../store/ducks/pageLoading';
+import { getPageError } from '../../../store/ducks/pageError';
 import { BOOKS } from '../../../graphql/books';
 import styles from './styles';
 
@@ -15,6 +16,7 @@ const AppOnline: FC = () => {
   const dispatch = useDispatch<Dispatch<ActionType>>();
   const online = useSelector(getOnline);
   const pageLoading = useSelector(getPageLoading);
+  const pageError = useSelector(getPageError);
   const [loading, setLoading] = useState(false);
   const [errored, setErrored] = useState(false);
   const handleTogglePress = useCallback(() => {
@@ -65,7 +67,7 @@ const AppOnline: FC = () => {
           <TouchableOpacity onPress={handleHardRefreshPress}>
             <Text>Hard Refresh</Text>
           </TouchableOpacity>
-          {errored && <Text>Error Online Query</Text>}
+          {(errored || pageError) && <Text>Error Online Query</Text>}
         </>
       )}
     </View>
