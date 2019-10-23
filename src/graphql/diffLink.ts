@@ -20,6 +20,7 @@ type Data = { [key: string]: any };
 
 const FIRST = 2;
 let currentPage = 0;
+let firstStart = 0;
 
 const { dispatch } = store;
 
@@ -66,9 +67,7 @@ const transformedData = (
       let mutatedBooks: Book[];
 
       // TODO: LOADING
-      // TODO: RESET
       // TODO: ERROR
-      // dispatch(setBooksLastModified(start)); // TODO
 
       // FIRST LOAD (PAGINATED)
       if (booksLastModified === 0) {
@@ -87,7 +86,19 @@ const transformedData = (
               query: BOOKS,
             });
           }, 0);
+        } else {
+          // LAST PAGE RESET
+          currentPage = 0;
         }
+        // HANDLE LAST MODIFIED
+        if (isFirstPage) {
+          firstStart = start;
+        }
+        if (isLastPage) {
+          dispatch(setBooksLastModified(firstStart));
+          firstStart = 0;
+        }
+        // OUTPUT THE DATA
         // FIRST PAGE
         if (isFirstPage) {
           return {
