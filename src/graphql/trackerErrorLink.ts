@@ -8,6 +8,7 @@ export default onError(({ operation, networkError }) => {
   const { dispatch } = store;
   const context = operation.getContext();
   const { tracked, trackedId } = context;
+  // TODO: COLLAPSE ALL ERROR HANDLING
   // TRACKER_LINK DOES NOT HANDLE NETWORK ERRORS
   if (networkError && tracked) {
     dispatch(trackedQueriesRemove(trackedId));

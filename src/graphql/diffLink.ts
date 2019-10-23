@@ -2,8 +2,6 @@ import { ApolloCache } from 'apollo-cache';
 import { ApolloClient } from 'apollo-client';
 import { ApolloLink, Operation } from 'apollo-link';
 import { BOOKS, BOOKS_UPDATE, BooksData, BooksUpdateData } from './books';
-// eslint-disable-next-line
-import client from '../graphql/client';
 import store from '../store';
 import { getBooksLastModified, setBooksLastModified } from '../store/ducks/booksLastModified';
 
