@@ -24,9 +24,11 @@ const AppUsingReduxUsingApollo: FC = () => {
   const apolloClient = useApolloClient();
   const dispatch = useDispatch();
   const online = useSelector(getOnline);
+  const pageLoading = useSelector(getPageLoading);
   const trackedQueries = useSelector(getTrackedQueries);
   const [trackedLoaded, setTrackedLoaded] = useState(false);
   const [onlineQueryFailed, setOnlineQueryFailed] = useState(false);
+  const [firstLoad, setFirstLoad] = useState(true);
 
   // TRACKED QUERIES (ONLY ON FIRST LOAD)
   useEffect(() => {
@@ -67,8 +69,11 @@ const AppUsingReduxUsingApollo: FC = () => {
     };
     execute();
   }, []);
+  if (firstLoad && trackedLoaded && !onlineQueryFailed && !pageLoading) {
+    setFirstLoad(false);
+  }
 
-  if (!trackedLoaded) {
+  if (firstLoad && (!trackedLoaded || pageLoading)) {
     return <Text>Loading Tracked Queries</Text>;
   }
   if (onlineQueryFailed) {
